@@ -10,3 +10,7 @@ figure;
 imshow(img);
 
 pyramid(img, 8, 'Laplacian', true);
+
+%phaseRandomization(img);
+
+% see rotv(angle) from the linear algebra package
