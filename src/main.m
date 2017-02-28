@@ -9,8 +9,8 @@ img = imread('../res/lena.pgm');
 figure;
 imshow(img);
 
-pyramid(img, 8, 'Laplacian', true);
+%pyramid(img, 8, 'Laplacian', true);
 
-%phaseRandomization(img);
+phaseRandomization(img);
 
 % see rotv(angle) from the linear algebra package
