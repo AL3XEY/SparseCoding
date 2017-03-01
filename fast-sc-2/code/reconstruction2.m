@@ -9,6 +9,8 @@ I = IMAGESr(:,:,img);
 figure;
 imshow(mat2gray(I));
 
+entropyI = entropy(I)
+
 %%%%%%%%%%%%%%%%%
 %%%%% NOISE %%%%%
 %%%%%%%%%%%%%%%%%
@@ -25,9 +27,11 @@ imshow(mat2gray(I));
 
 %%%%%%%%%%%%%%%%%
 
-foo = h - winsize + 1;
 figure;
 imshow(mat2gray(I));
+entropyInoised = entropy(I)
+
+foo = h - winsize + 1;
 X = getdata_imagearray_all2(I, 8);
 Sout = l1ls_featuresign (B, X, 1);
 Xout = B*Sout;
@@ -47,3 +51,4 @@ Iout = Iout ./ meanCoef;
 
 figure;
 imshow(mat2gray(Iout))
+entropyIout = entropy(Iout)
