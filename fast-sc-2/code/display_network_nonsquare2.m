@@ -34,9 +34,17 @@ for i=1:m
 end
 
 if isreal(array)
-    h=imagesc(array,'EraseMode','none',[-1 1]);
+    if(is_octave)
+      h=imagesc(array,[-1 1],'EraseMode','none');
+    else
+      h=imagesc(array,'EraseMode','none',[-1 1]);
+    end
 else
-    h=imagesc(20*log10(abs(array)),'EraseMode','none',[-1 1]);
+    if(is_octave)
+      h=imagesc(20*log10(abs(array)),[-1 1],'EraseMode','none');
+    else
+      h=imagesc(20*log10(abs(array)),'EraseMode','none',[-1 1]);
+    end
 end;
 axis image off
 

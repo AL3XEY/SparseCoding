@@ -34,7 +34,14 @@ lb=zeros(size(dual_lambda));
 options = optimset('GradObj','on', 'Hessian','on');
 %  options = optimset('GradObj','on', 'Hessian','on', 'TolFun', 1e-7);
 
-[x, fval, exitflag, output] = fmincon(@(x) fobj_basis_dual(x, SSt, XSt, X, c, trXXt), dual_lambda, [], [], [], [], lb, [], [], options);
+if (is_octave)
+  %pkg load optim;
+  %[x, fval, exitflag, output] = nonlin_min(@(x) fobj_basis_dual(x, SSt, XSt, X, c, trXXt), dual_lambda, [], [], [], [], lb, [], [], options);
+  
+  [x, fval, exitflag] = sqp(dual_lambda, @(x) fobj_basis_dual(x, SSt, XSt, X, c, trXXt), [], [], lb, []);
+else
+  [x, fval, exitflag, output] = fmincon(@(x) fobj_basis_dual(x, SSt, XSt, X, c, trXXt), dual_lambda, [], [], [], [], lb, [], [], options);
+end
 % output.iterations
 fval_opt = -0.5*N*fval;
 dual_lambda= x;
