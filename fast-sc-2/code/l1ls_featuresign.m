@@ -188,7 +188,7 @@ fobj_lsearch = gamma*sum(abs(x2));
 [sort_lsearch, ix_lsearch] = sort([progress',1]);
 remove_idx=[];
 for i = 1:length(sort_lsearch)
-    t = sort_lsearch(i); if t<=0 | t>1 continue; end
+    t = sort_lsearch(i); if t<=0 || t>1 continue; end
     s_temp= x2+ (x_new- x2).*t;
     fobj_temp = a*t^2 + b*t + gamma*sum(abs(s_temp));
     if fobj_temp < fobj_lsearch
@@ -217,7 +217,7 @@ end
 
 % if x encounters zero along the line search, then remove it from
 % active set
-if lsearch<1 & lsearch>0
+if lsearch<1 && lsearch>0
     %remove_idx = find(x(act_indx1)==0);
     remove_idx = find(abs(x(act_indx1)) < eps);
     x(act_indx1(remove_idx))=0;
