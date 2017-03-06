@@ -6,7 +6,7 @@ function [I Sout Iout] = reconstruction(img, datas, winsize)
 % img : filename (string), index in the dataset (integer 1 - 10) or actual image (matrix)
 % winsize : size of the patches
 
-load(datas);
+pkg load image;
 
 type = typeinfo(img);
 if type == 'scalar'
@@ -40,15 +40,18 @@ entropyI = entropy(I)
 
 %https://fr.mathworks.com/help/stats/binornd.html?requestedDomain=www.mathworks.com
 
+In = I;
+
 %%%%%%%%%%%%%%%%%
 
 figure;
-imshow(mat2gray(I));
-entropyInoised = entropy(I)
+imshow(mat2gray(In));
+entropyInoised = entropy(In)
+PSNR_In = psnr(In, I)
 
 load(datas); % load dictionnary B
 foo = h - winsize + 1;
-X = getdata_imagearray_all(I, 8);
+X = getdata_imagearray_all(In, 8);
 Sout = l1ls_featuresign (B, X, 1);
 Xout = B*Sout;
 Iout = zeros(h,w);
@@ -68,3 +71,4 @@ Iout = Iout ./ meanCoef;
 figure;
 imshow(mat2gray(Iout))
 entropyIout = entropy(Iout)
+PSNR_Iout = psnr(Iout, I)
