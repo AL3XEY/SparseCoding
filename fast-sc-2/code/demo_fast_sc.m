@@ -10,12 +10,11 @@ end
 %load ../data/IMAGES.mat
 load ../data/IMAGES_RAW.mat
 %X = getdata_imagearray(IMAGES, 14, 10000);
-X = getdata_imagearray(IMAGESr, 8, 100000);
-%X = getdata_imagearray(IMAGESr, 8, 4096);
+%X = getdata_imagearray(IMAGESr, 8, 100000);
+X = getdata_imagearray(IMAGESr, 8, 4096);
 %X = getdata_imagearray_all(IMAGESr, 8);
-%X = getdata_imagearray_all2(IMAGESr, 8);
-%X = getdata_imagearray_all2(IMAGESr(:,:,4), 8);
-%X = getdata_imagearray_all2(IMAGESr(:,:,1), 8);
+%X = getdata_imagearray_all(IMAGESr(:,:,4), 8);
+%X = getdata_imagearray_all(IMAGESr(:,:,1), 8);
 
 % sparse coding parameters
 num_bases = 128;

@@ -2,12 +2,12 @@ function B = l2ls_learn_basis_dual(X, S, l2norm, Binit)
 % Learning basis using Lagrange dual (with basis normalization)
 %
 % This code solves the following problem:
-% 
+%
 %    minimize_B   0.5*||X - B*S||^2
 %    subject to   ||B(:,j)||_2 <= l2norm, forall j=1...size(S,1)
-% 
+%
 % The detail of the algorithm is described in the following paper:
-% 'Efficient Sparse Codig Algorithms', Honglak Lee, Alexis Battle, Rajat Raina, Andrew Y. Ng, 
+% 'Efficient Sparse Codig Algorithms', Honglak Lee, Alexis Battle, Rajat Raina, Andrew Y. Ng,
 % Advances in Neural Information Processing Systems (NIPS) 19, 2007
 %
 % Written by Honglak Lee <hllee@cs.stanford.edu>
@@ -31,13 +31,13 @@ c = l2norm^2;
 trXXt = sum(sum(X.^2));
 
 lb=zeros(size(dual_lambda));
-options = optimset('GradObj','on', 'Hessian','on');
+options = optimset('GradObj','on', 'Hessian','on'); %FIXME throw warning
 %  options = optimset('GradObj','on', 'Hessian','on', 'TolFun', 1e-7);
 
 if (is_octave)
   %pkg load optim;
   %[x, fval, exitflag, output] = nonlin_min(@(x) fobj_basis_dual(x, SSt, XSt, X, c, trXXt), dual_lambda, [], [], [], [], lb, [], [], options);
-  
+
   [x, fval, exitflag] = sqp(dual_lambda, @(x) fobj_basis_dual(x, SSt, XSt, X, c, trXXt), [], [], lb, []);
 else
   [x, fval, exitflag, output] = fmincon(@(x) fobj_basis_dual(x, SSt, XSt, X, c, trXXt), dual_lambda, [], [], [], [], lb, [], [], options);
@@ -71,7 +71,7 @@ SSt_inv = inv(SSt + diag(dual_lambda));
 if L>M
     % (M*M)*((M*L)*(L*M)) => MLM + MMM = O(M^2(M+L))
     f = -trace(SSt_inv*(XSt'*XSt))+trXXt-c*sum(dual_lambda);
-    
+
 else
     % (L*M)*(M*M)*(M*L) => LMM + LML = O(LM(M+L))
     f = -trace(XSt*SSt_inv*XSt')+trXXt-c*sum(dual_lambda);
@@ -84,8 +84,8 @@ if nargout > 1   % fun called with two output arguments
     temp = XSt*SSt_inv;
     g = sum(temp.^2) - c;
     g= -g;
-    
-    
+
+
     if nargout > 2
         % Hessian evaluated at x
         % H = -2.*((SSt_inv*XSt'*XSt*SSt_inv).*SSt_inv);

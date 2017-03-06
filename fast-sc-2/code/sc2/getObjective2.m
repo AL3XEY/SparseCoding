@@ -20,11 +20,11 @@ fresidue  = 0.5*lambda*sum(sum(E.^2));
 
 if strcmp(sparsity, 'log')
 	fsparsity = beta*sum(sum(log(1+(S/sigma).^2)));
-elseif strcmp(sparsity, 'huberL1') 
+elseif strcmp(sparsity, 'huberL1')
 	fsparsity = beta*sum(sum(huber_func(S/sigma, epsilon)));
 elseif strcmp(sparsity, 'epsL1')
 	fsparsity = beta*sum(sum(sqrt(epsilon+(S/sigma).^2)));
-elseif strcmp(sparsity, 'L1') | strcmp(sparsity, 'LARS') | strcmp(sparsity, 'trueL1') | strcmp(sparsity, 'FS')		  
+elseif strcmp(sparsity, 'L1') || strcmp(sparsity, 'LARS') || strcmp(sparsity, 'trueL1') || strcmp(sparsity, 'FS')		  
     fsparsity = beta*sum(sum(abs(S/sigma)));
 elseif strcmp(sparsity, 'logpos')
 	fsparsity = beta*sum(sum(log(1+(S/sigma))));

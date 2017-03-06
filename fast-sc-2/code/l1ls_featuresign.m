@@ -72,7 +72,7 @@ else
     allowZero = true;
 end
 
-fname_debug = sprintf('../tmp/fsdebug_%x.mat', datestr(now, 30));
+fname_debug = sprintf('../tmp/fsdebug_%s.mat', datestr(now, 30)); %FIXME throws warning
 
 fobj = 0; %fobj_featuresign(x, A, y, AtA, Aty, gamma);
 
@@ -170,7 +170,7 @@ x_new = AtA2 \ ( Aty(act_indx1) - gamma.*theta2 ); % RR
 % opts.POSDEF=true; opts.SYM=true; % RR
 % x_new = linsolve(AtA2, ( Aty(act_indx1) - gamma.*theta2 ), opts); % RR
 optimality1= false;
-if (sign(x_new) == sign(x2))
+if (all(all(sign(x_new) == sign(x2))))
     optimality1= true;
     x(act_indx1) = x_new;
     fobj = 0; %fobj_featuresign(x, A, y, AtA, Aty, gamma);
