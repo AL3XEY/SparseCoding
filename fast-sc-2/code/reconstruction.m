@@ -1,4 +1,4 @@
-function [I Sout Iout] = reconstruction(img, datas, winsize)
+function [I Sout Iout] = reconstruction(img, datas)
 
 % I : image used for reconstruction (noisy or not)
 % Sout : output sparse coefficients
@@ -40,6 +40,8 @@ In = I;
 %%%%%%%%%%%%%%%%%
 
 load(datas); % load dictionnary B
+sz = size(B,1);
+winsize = sqrt(sz);
 foo = h - winsize + 1;
 X = getdata_imagearray_all(In, 8);
 Sout = l1ls_featuresign (B, X, 1);
@@ -58,7 +60,7 @@ end
 
 Iout = Iout ./ meanCoef;
 
-%%%%% Show and save the images %%%%%
+%%%%% Show and save the images and coefficients %%%%%
 
 figure;
 imshow(mat2gray(I));
@@ -76,3 +78,5 @@ imshow(mat2gray(Iout))
 imwrite(Iout, '../results/Iout.png');
 entropyIout = entropy(Iout)
 PSNR_Iout = psnr(Iout, I)
+
+save('Sout.mat', 'Sout');
