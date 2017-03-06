@@ -19,12 +19,7 @@ elseif type == 'diagonal matrix'
 else
 	error('img is not a filename nor an index number nor a matrix')
 end
-
 [h w] = size(I);
-figure;
-imshow(mat2gray(I));
-
-entropyI = entropy(I)
 
 %%%%%%%%%%%%%%%%%
 %%%%% NOISE %%%%%
@@ -43,11 +38,6 @@ entropyI = entropy(I)
 In = I;
 
 %%%%%%%%%%%%%%%%%
-
-figure;
-imshow(mat2gray(In));
-entropyInoised = entropy(In)
-PSNR_In = psnr(In, I)
 
 load(datas); % load dictionnary B
 foo = h - winsize + 1;
@@ -68,7 +58,21 @@ end
 
 Iout = Iout ./ meanCoef;
 
+%%%%% Show and save the images %%%%%
+
+figure;
+imshow(mat2gray(I));
+imwrite(I, '../results/I.png');
+entropyI = entropy(I)
+
+figure;
+imshow(mat2gray(In));
+imwrite(In, '../results/In.png');
+entropyInoised = entropy(In)
+PSNR_In = psnr(In, I)
+
 figure;
 imshow(mat2gray(Iout))
+imwrite(Iout, '../results/Iout.png');
 entropyIout = entropy(Iout)
 PSNR_Iout = psnr(Iout, I)
