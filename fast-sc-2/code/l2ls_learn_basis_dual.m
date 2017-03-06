@@ -31,8 +31,12 @@ c = l2norm^2;
 trXXt = sum(sum(X.^2));
 
 lb=zeros(size(dual_lambda));
-options = optimset('GradObj','on', 'Hessian','on'); %FIXME throw warning
-%  options = optimset('GradObj','on', 'Hessian','on', 'TolFun', 1e-7);
+if is_octave
+	options = optimset('GradObj','on');
+else
+	options = optimset('GradObj','on', 'Hessian','on'); %FIXME throw warning
+%  	options = optimset('GradObj','on', 'Hessian','on', 'TolFun', 1e-7);
+end
 
 if (is_octave)
   %pkg load optim;

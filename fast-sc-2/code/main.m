@@ -8,7 +8,7 @@ if (is_octave)
   warning('off', 'Octave:precedence-change');
   warning('off', 'Octave:str-to-num');
   warning('off', 'Octave:string-concat');
-  
-  warning("off", "all")
+
+  warning('off', 'all')
 end
 demo_fast_sc(1)
