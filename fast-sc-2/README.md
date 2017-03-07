@@ -12,7 +12,7 @@ Files added :
 * `getdata_imagearray_some.m`
 * `getdata_imagearray_all.m`
 
-Files updates :
+Files updated :
 
 * `l2ls_learn_basis_dual.m`
 * `l1ls_featuresign.m`
