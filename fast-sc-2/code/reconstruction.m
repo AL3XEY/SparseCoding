@@ -99,12 +99,15 @@ figure;
 imshow(mat2gray(In));
 imwrite(In, '../results/In.png');
 entropyInoised = entropy(In)
-%PSNR_In = psnr(In, I) %FIXME Matlab : undefined function psnr for type double
+if is_octave
+	PSNR_In = psnr(In, I) %FIXME not available for Matlab version < R2014a
+end
 
 figure;
 imshow(mat2gray(Iout))
 imwrite(Iout, '../results/Iout.png');
 entropyIout = entropy(Iout)
-%PSNR_Iout = psnr(Iout, I) %FIXME Matlab : undefined function psnr for type double
-
+if is_octave
+	PSNR_Iout = psnr(Iout, I) %FIXME not available for Matlab version < R2014a
+end
 save('Sout.mat', 'Sout');
