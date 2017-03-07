@@ -34,7 +34,7 @@ lb=zeros(size(dual_lambda));
 if is_octave
 	options = optimset('GradObj','on');
 else
-	options = optimset('GradObj','on', 'Hessian','on'); %FIXME throw warning
+	options = optimset('GradObj','on', 'Hessian','on'); %FIXME throw warning on Octave
 %  	options = optimset('GradObj','on', 'Hessian','on', 'TolFun', 1e-7);
 end
 
