@@ -6,18 +6,47 @@ function [I Sout Iout] = reconstruction(img, datas)
 % img : filename (string), index in the dataset (integer 1 - 10) or actual image (matrix)
 % winsize : size of the patches
 
-pkg load image;
+if is_octave
+	pkg load image;
+	type = typeinfo(img);
+	if type == 'scalar'
+		load('../data/IMAGES_RAW.mat');
+		I = IMAGESr(:,:,img);
+	elseif type == 'sq_string'
+		I = imread(img);
+	elseif type == 'diagonal matrix' %TODO useful?
+		I = img;
+	else
+		error('img is not a filename nor an index number nor a matrix') %TODO useful?
+	end
 
-type = typeinfo(img);
-if type == 'scalar'
-	load('../data/IMAGES_RAW.mat');
-	I = IMAGESr(:,:,img);
-elseif type == 'sq_string'
-	I = imread(img);
-elseif type == 'diagonal matrix'
-	I = img
+	type = typeinfo(datas);
+	if type == 'sq_string'
+		load(datas); % load dictionnary B
+	elseif type == 'diagonal matrix' %TODO useful?
+		B = datas;
+	else
+		error('img is not a filename nor a matrix') %TODO useful?
+	end
 else
-	error('img is not a filename nor an index number nor a matrix')
+	if isinteger(img) && size(img) == 1
+		load('../data/IMAGES_RAW.mat');
+		I = IMAGESr(:,:,img);
+	elseif ischar(img)
+		I = imread(img);
+	elseif isnumeric(img) %TODO useful?
+		I = img;
+	else
+		error('img is not a filename nor an index number nor a matrix') %TODO useful?
+	end
+
+	if ischar(datas)
+		load(datas); % load dictionnary B
+	elseif isnumeric(datas) %TODO useful?
+		B = datas;
+	else
+		error('img is not a filename nor a matrix') %TODO useful?
+	end
 end
 [h w] = size(I);
 
@@ -39,7 +68,6 @@ In = I;
 
 %%%%%%%%%%%%%%%%%
 
-load(datas); % load dictionnary B
 sz = size(B,1);
 winsize = sqrt(sz);
 foo = h - winsize + 1;
@@ -71,12 +99,12 @@ figure;
 imshow(mat2gray(In));
 imwrite(In, '../results/In.png');
 entropyInoised = entropy(In)
-PSNR_In = psnr(In, I)
+%PSNR_In = psnr(In, I) %FIXME Matlab : undefined function psnr for type double
 
 figure;
 imshow(mat2gray(Iout))
 imwrite(Iout, '../results/Iout.png');
 entropyIout = entropy(Iout)
-PSNR_Iout = psnr(Iout, I)
+%PSNR_Iout = psnr(Iout, I) %FIXME Matlab : undefined function psnr for type double
 
 save('Sout.mat', 'Sout');
