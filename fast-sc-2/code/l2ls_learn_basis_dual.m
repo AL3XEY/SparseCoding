@@ -34,11 +34,16 @@ lb=zeros(size(dual_lambda));
 if is_octave
 	options = optimset('GradObj','on');
 else
-	options = optimset('GradObj','on', 'Hessian','on'); %FIXME throw warning on Octave
-%  	options = optimset('GradObj','on', 'Hessian','on', 'TolFun', 1e-7);
+    ver = version('-release');
+    if ver == '2013a' %TODO srcmp
+        options = optimset('GradObj','on', 'Hessian','on'); %FIXME throw warning on Octave
+%       options = optimset('GradObj','on', 'Hessian','on', 'TolFun', 1e-7);
+    else
+        options = optimset('GradObj','on');
+    end
 end
 
-if (is_octave)
+if is_octave
   %pkg load optim;
   %[x, fval, exitflag, output] = nonlin_min(@(x) fobj_basis_dual(x, SSt, XSt, X, c, trXXt), dual_lambda, [], [], [], [], lb, [], [], options);
 
