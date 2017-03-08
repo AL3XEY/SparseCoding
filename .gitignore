@@ -7,6 +7,10 @@
 *.ppm
 *.mat
 
+# Matlab
+
+*.asv
+
 # Misc
 
 *~
