@@ -73,8 +73,7 @@ if exist(options) && ~empty(options) && strcmp(options, 'noise')
 end
 %%%%%%%%%%%%%%%%%
 
-szH = size(B,1);
-szW = size(B,2);
+[szH szW] = size(B);
 winsize = sqrt(szH);
 foo = h - winsize + 1;
 bar = w - winsize + 1;
@@ -82,17 +81,34 @@ X = getdata_imagearray_all(In, 8);
 Sout = l1ls_featuresign (B, X, 1);
 
 if exist(options) && ~empty(options)
-	if  strcmp(options, 'remove_last')
+	if strcmp(options, 'remove_last')
 		if ~exist(param) || ~empty(param)
 			param = 1;
 		end
 		for i=1:param
 			for j=1:szW
-				[value index] = min(S(:,j));
-				S(index,j) = 0;
+				%[value index] = min(S(:,j)); %FIXME should be non-zero!
+				%S(index,j) = 0;
+
+				nzeros = find(Sout(:,j));
+				for k=1:size(nzeros)
+					nzeros(k,2) = Sout(nzeros(k,1),j);
+				end
+				[value index] = min(abs(nzeros(:,2)));
+				Sout(nzeros(index,1),j) = 0;
 			end
 		end
 	end
+%	if strcmp(options, 'add_random')
+%		if ~exist(param) || ~empty(param)
+%			param = 1;
+%		end
+%		for i=1:param
+%			for j=1:szW
+%
+%			end
+%		end
+%	end
 end
 
 Xout = B*Sout;
