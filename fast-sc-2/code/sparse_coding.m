@@ -134,7 +134,6 @@ while t < pars.num_trials
 
     % Take a random permutation of the samples
     indperm = randperm(size(X,2));
-
     for batch=1:(size(X,2)/pars.batch_size),
         % Show progress in epoch
         if 1, fprintf('.'); end
