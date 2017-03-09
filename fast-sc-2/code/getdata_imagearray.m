@@ -1,7 +1,6 @@
 function X = getdata_imagearray(IMAGES, winsize, num_patches)
 
-num_images=size(IMAGES,3);
-image_size=size(IMAGES,1);
+[h w num_images] =size(IMAGES);
 sz= winsize;
 BUFF=4;
 
@@ -22,12 +21,12 @@ for i=1:num_images,
 
     % Extract patches at random from this image to make data vector X
     for j=1:getsample
-        r=BUFF+ceil((image_size-sz-2*BUFF)*rand);
-        c=BUFF+ceil((image_size-sz-2*BUFF)*rand);
+        r=BUFF+ceil((h-sz-2*BUFF)*rand);
+        c=BUFF+ceil((w-sz-2*BUFF)*rand);
         totalsamples = totalsamples + 1;
         % X(:,totalsamples)=reshape(this_image(r:r+sz-1,c:c+sz-1),sz^2,1);
         temp =reshape(this_image(r:r+sz-1,c:c+sz-1),sz^2,1);
         X(:,totalsamples) = temp - mean(temp);
     end
-end  
+end
 fprintf('\n');
