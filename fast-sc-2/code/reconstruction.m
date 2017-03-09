@@ -1,10 +1,12 @@
-function [I Sout Iout] = reconstruction(img, datas)
+function [I Sout Iout] = reconstruction(img, datas, options, param) %TODO multiple options
 
 % I : image used for reconstruction (noisy or not)
 % Sout : output sparse coefficients
 % Iout : image recovered using sparse coding
 % img : filename (string), index in the dataset (integer 1 - 10) or actual image (matrix)
-% winsize : size of the patches
+% datas : filename (string) for dictionnary or actual dictionnary (matrix)
+% TODO options
+% TODO param
 
 if is_octave
 	pkg load image;
@@ -29,13 +31,17 @@ if is_octave
 		error('img is not a filename nor a matrix') %TODO useful?
 	end
 else
-	if isinteger(img) && size(img) == 1
-		load('../data/IMAGES_RAW.mat');
-		I = IMAGESr(:,:,img);
-	elseif ischar(img)
+	%if isinteger(img) && size(img) == 1
+	%	load('../data/IMAGES_RAW.mat');
+	%	I = IMAGESr(:,:,img);
+	if ischar(img)
 		I = imread(img);
-	elseif isnumeric(img) %TODO useful?
+	elseif isnumeric(img)
 		I = img;
+		if size(img) == 1
+			load('../data/IMAGES_RAW.mat');
+			I = IMAGESr(:,:,img);
+		end
 	else
 		error('img is not a filename nor an index number nor a matrix') %TODO useful?
 	end
@@ -53,36 +59,52 @@ end
 %%%%%%%%%%%%%%%%%
 %%%%% NOISE %%%%%
 %%%%%%%%%%%%%%%%%
-
-%I = imnoise(I, 'gaussian');
-
-%sigma = 0.2;
-%I = I + sigma*randn(size(I));
-
-%randnoise = reshape(round(rand(512^2,1)),512,512);
-%I = I.*randnoise;
-
-%https://fr.mathworks.com/help/stats/binornd.html?requestedDomain=www.mathworks.com
-
 In = I;
+if exist(options) && ~empty(options) && strcmp(options, 'noise')
+	%I = imnoise(I, 'gaussian');
 
+	%sigma = 0.2;
+	%I = I + sigma*randn(size(I));
+
+	%randnoise = reshape(round(rand(512^2,1)),512,512);
+	%I = I.*randnoise;
+
+	%https://fr.mathworks.com/help/stats/binornd.html?requestedDomain=www.mathworks.com
+end
 %%%%%%%%%%%%%%%%%
 
-sz = size(B,1);
-winsize = sqrt(sz);
+szH = size(B,1);
+szW = size(B,2);
+winsize = sqrt(szH);
 foo = h - winsize + 1;
+bar = w - winsize + 1;
 X = getdata_imagearray_all(In, 8);
 Sout = l1ls_featuresign (B, X, 1);
+
+if exist(options) && ~empty(options)
+	if  strcmp(options, 'remove_last')
+		if ~exist(param) || ~empty(param)
+			param = 1;
+		end
+		for i=1:param
+			for j=1:szW
+				[value index] = min(S(:,j));
+				S(index,j) = 0;
+			end
+		end
+	end
+end
+
 Xout = B*Sout;
 Iout = zeros(h,w);
 meanCoef = zeros(h,w);
 
 cpt = 1;
 for i=1:foo
-	for j=1:foo
+	for j=1:bar
 		Iout(i:i+winsize-1, j:j+winsize-1) = Iout(i:i+winsize-1, j:j+winsize-1) + reshape(Xout(:,cpt),winsize,winsize);
 		meanCoef(i:i+winsize-1, j:j+winsize-1) = meanCoef(i:i+winsize-1, j:j+winsize-1)+1;
-		cpt = cpt+1;
+		cpt = cpt + 1;
 	end
 end
 
