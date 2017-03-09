@@ -78,18 +78,16 @@ winsize = sqrt(szH);
 foo = h - winsize + 1;
 bar = w - winsize + 1;
 X = getdata_imagearray_all(In, 8);
+[Xh Xw] = size(X);
 Sout = l1ls_featuresign (B, X, 1);
 
-if exist(options) && ~empty(options)
+if ~(nargin<3)%exist(options) && ~empty(options)
 	if strcmp(options, 'remove_last')
-		if ~exist(param) || ~empty(param)
+		if (nargin<4)%~exist(param) || empty(param)
 			param = 1;
 		end
 		for i=1:param
-			for j=1:szW
-				%[value index] = min(S(:,j)); %FIXME should be non-zero!
-				%S(index,j) = 0;
-
+			for j=1:Xw
 				nzeros = find(Sout(:,j));
 				for k=1:size(nzeros)
 					nzeros(k,2) = Sout(nzeros(k,1),j);
@@ -100,7 +98,7 @@ if exist(options) && ~empty(options)
 		end
 	end
 %	if strcmp(options, 'add_random')
-%		if ~exist(param) || ~empty(param)
+%		if nargin<4
 %			param = 1;
 %		end
 %		for i=1:param
@@ -148,4 +146,6 @@ entropyIout = entropy(Iout)
 if is_octave
 	PSNR_Iout = psnr(Iout, I) %FIXME not available for Matlab version < R2014a
 end
-save('Sout.mat', 'Sout');
+sparsity = sum(Sout(:)~=0)/length(Sout(:));
+fprintf('sparsity = %g\n', sparsity);
+save('Sout.mat', 'Sout', 'sparsity');
