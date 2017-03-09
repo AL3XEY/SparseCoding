@@ -89,6 +89,9 @@ if ~(nargin<3)%exist(options) && ~empty(options)
 		for i=1:param
 			for j=1:Xw
 				nzeros = find(Sout(:,j));
+				tmp = zeros(size(nzeros,1),2);
+				tmp(:,1) = nzeros(:);
+				nzeros = tmp;
 				for k=1:size(nzeros)
 					nzeros(k,2) = Sout(nzeros(k,1),j);
 				end
