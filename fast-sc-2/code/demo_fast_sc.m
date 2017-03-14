@@ -6,10 +6,15 @@ if ~exist('opt_choice', 'var')
     opt_choice = 1;
 end
 
+if is_octave
+    pkg load image;
+end
+
 % natural image data
 %load ../data/IMAGES.mat
 %X = getdata_imagearray(IMAGES, 14, 10000);
 load ../data/IMAGES_RAW.mat
+%IMAGESr = im2uint8(IMAGESr);
 X = getdata_imagearray(IMAGESr, 8, 4096);
 %X = getdata_imagearray(IMAGESr, 8, 100000);
 %X = getdata_imagearray_all(IMAGESr, 8);
@@ -17,6 +22,7 @@ X = getdata_imagearray(IMAGESr, 8, 4096);
 %X = getdata_imagearray_all(IMAGESr(:,:,1), 8);
 %load ../../res/att_faces/faces.mat
 %X = getdata_imagearray(faces, 8, 4096);
+%X = getdata_imagearray(faces, 8, 400000);
 %X = getdata_imagearray_all(faces, 8);
 %X = getdata_imagearray_all(faces(:,:,1), 8);
 
@@ -24,7 +30,7 @@ X = getdata_imagearray(IMAGESr, 8, 4096);
 num_bases = 128;
 beta = 0.4;
 batch_size = 1000;
-num_iters = 2;
+num_iters = 15;
 if opt_choice==1
     sparsity_func= 'L1';
     epsilon = [];
