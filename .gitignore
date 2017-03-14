@@ -5,7 +5,6 @@
 *.jpg
 *.pgm
 *.ppm
-*.mat
 
 # Matlab
 
