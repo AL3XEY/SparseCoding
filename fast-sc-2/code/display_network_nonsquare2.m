@@ -34,13 +34,13 @@ for i=1:m
 end
 
 if isreal(array)
-    if(is_octave)
+    if is_octave
       h=imagesc(array,[-1 1],'EraseMode','none');
     else
       h=imagesc(array,'EraseMode','none',[-1 1]);
     end
 else
-    if(is_octave)
+    if is_octave
       h=imagesc(20*log10(abs(array)),[-1 1],'EraseMode','none');
     else
       h=imagesc(20*log10(abs(array)),'EraseMode','none',[-1 1]);

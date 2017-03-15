@@ -35,7 +35,7 @@ if is_octave
 	options = optimset('GradObj','on');
 else
     ver = version('-release');
-    if ver == '2013a' %TODO srcmp
+    if strcmp(ver, '2013a') %TODO verLessThan('matlab', '8.3') ?
         options = optimset('GradObj','on', 'Hessian','on'); %FIXME throw warning on Octave
 %       options = optimset('GradObj','on', 'Hessian','on', 'TolFun', 1e-7);
     else
