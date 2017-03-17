@@ -71,13 +71,13 @@ end
 %%%%%%%%%%%%%%%%%
 
 [szH szW] = size(B);
-%fprintf('szH = %d\t szW = %d', szH, szW);
-winsize = sqrt(szH);
+winsize = sqrt(pars.patch_size);
 foo = h - winsize + 1;
 bar = w - winsize + 1;
 X = getdata_imagearray_all(In, 8);
 [Xh Xw] = size(X);
-Sout = l1ls_featuresign (B, X, 1);
+Sout = l1ls_featuresign (B, X, pars.beta/pars.sigma*pars.noise_var); %TODO FIXME : too many coefficients activated... so the dictionnary is bad !
+%Sout = l1ls_featuresign (B, X, 0.001);
 
 if ~(nargin<3)%exist(options) && ~isempty(options)
 	if strcmp(options, 'remove_last')
@@ -150,21 +150,27 @@ Iout = Iout ./ meanCoef;
 %%%%% Show and save the images, coefficients and stats %%%%%
 
 figure;
-imshow(mat2gray(I));
-imwrite(I, '../results/I.png');
+%imshow(mat2gray(I));
+colormap gray;
+imagesc(I, [-0.5 0.5])
+%imwrite(I, '../results/I.png');
 entropyI = entropy(I)
 
 figure;
-imshow(mat2gray(In));
-imwrite(In, '../results/In.png');
+%imshow(mat2gray(In));
+colormap gray;
+imagesc(In, [-0.5 0.5])
+%imwrite(In, '../results/In.png');
 entropyInoised = entropy(In)
 if is_octave && ~verLessThan('matlab', '8.3') %if Matlab R2014a and above
 	PSNR_In = psnr(In, I)
 end
 
 figure;
-imshow(mat2gray(Iout))
-imwrite(Iout, '../results/Iout.png');
+%imshow(mat2gray(Iout));
+colormap gray;
+imagesc(Iout, [-0.5 0.5]);
+%imwrite(Iout, '../results/Iout.png');
 entropyIout = entropy(Iout)
 if is_octave && ~verLessThan('matlab', '8.3') %if Matlab R2014a and above
 	PSNR_Iout = psnr(Iout, I)
