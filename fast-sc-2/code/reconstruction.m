@@ -7,6 +7,7 @@ function [I In Iout Sout] = reconstruction(img, datas, gamma, options, param) %T
 % datas : filename (string) for dictionnary or actual dictionnary (matrix)
 % TODO options
 % TODO param
+% TODO gamma
 
 if is_octave
 	pkg load image;
@@ -74,7 +75,7 @@ end
 winsize = sqrt(pars.patch_size);
 foo = h - winsize + 1;
 bar = w - winsize + 1;
-X = getdata_imagearray_all(In, 8);
+X = getdata_imagearray_all(In, winsize);
 [Xh Xw] = size(X);
 if (nargin<3) || isempty(gamma)
     gamma = pars.beta/pars.sigma*pars.noise_var;
