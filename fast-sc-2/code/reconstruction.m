@@ -1,4 +1,4 @@
-function [I In Iout Sout] = reconstruction(img, datas, options, param) %TODO multiple options
+function [I In Iout Sout] = reconstruction(img, datas, gamma, options, param) %TODO multiple options
 
 % I : image used for reconstruction (noisy or not)
 % Sout : output sparse coefficients
@@ -11,21 +11,21 @@ function [I In Iout Sout] = reconstruction(img, datas, options, param) %TODO mul
 if is_octave
 	pkg load image;
 	type = typeinfo(img);
-	if type == 'scalar'
+	if strcmp(type, 'scalar')
 		load('../data/IMAGES_RAW.mat');
 		I = IMAGESr(:,:,img);
-	elseif type == 'sq_string'
+	elseif strcmp(type, 'sq_string')
 		I = imread(img);
-	elseif type == 'diagonal matrix' %TODO useful?
+	elseif strcmp(type, 'diagonal matrix') %TODO useful?
 		I = img;
 	else
 		error('img is not a filename nor an index number nor a matrix')
 	end
 
 	type = typeinfo(datas);
-	if type == 'sq_string'
+	if strcmp(type, 'sq_string')
 		load(datas); % load dictionnary B
-	elseif type == 'diagonal matrix' %TODO useful?
+	elseif strcmp(type, 'diagonal matrix') %TODO useful?
 		B = datas;
 	else
 		error('img is not a filename nor a matrix')
@@ -57,14 +57,14 @@ end
 %%%%% NOISE %%%%%
 %%%%%%%%%%%%%%%%%
 In = I;
-if strcmp(options, 'noise') && ~(nargin<3) %exist(options) && ~isempty(options)
-	%I = imnoise(I, 'gaussian');
+if strcmp(options, 'noise') && ~(nargin<4) %exist(options) && ~isempty(options)
+	%In = imnoise(I, 'gaussian');
 
-	%sigma = 0.2;
-	%I = I + sigma*randn(size(I));
+	sigma = 0.1;
+	In = I + sigma*randn(h, w);
 
 	%randnoise = reshape(round(rand(512^2,1)),512,512);
-	%I = I.*randnoise;
+	%In = I.*randnoise;
 
 	%https://fr.mathworks.com/help/stats/binornd.html?requestedDomain=www.mathworks.com
 end
@@ -76,12 +76,15 @@ foo = h - winsize + 1;
 bar = w - winsize + 1;
 X = getdata_imagearray_all(In, 8);
 [Xh Xw] = size(X);
-Sout = l1ls_featuresign (B, X, pars.beta/pars.sigma*pars.noise_var); %TODO FIXME : too many coefficients activated... so the dictionnary is bad !
+if (nargin<3) || isempty(gamma)
+    gamma = pars.beta/pars.sigma*pars.noise_var;
+end
+Sout = l1ls_featuresign (B, X, gamma); %TODO FIXME : too many coefficients activated means that the dictionnary is bad (minimizes sparsity but not error)
 %Sout = l1ls_featuresign (B, X, 0.001);
 
-if ~(nargin<3)%exist(options) && ~isempty(options)
+if ~(nargin<4) && ~isempty(options)%exist(options) && ~isempty(options)
 	if strcmp(options, 'remove_last')
-		if (nargin<4)%~exist(param) || isempty(param)
+		if (nargin<5) && ~isempty(param)%~exist(param) || isempty(param)
 			param = 1;
 		end
 		for i=1:param
@@ -101,7 +104,7 @@ if ~(nargin<3)%exist(options) && ~isempty(options)
 		end
 	end
 	if strcmp(options, 'add_random')
-		if nargin<4
+		if nargin<5 && ~isempty(param)
 			param = 1;
 		end
 		for i=1:param
@@ -149,37 +152,46 @@ Iout = Iout ./ meanCoef;
 
 %%%%% Show and save the images, coefficients and stats %%%%%
 
+%figure;
+%imshow(mat2gray(I, [-0.5 0.5]));
 figure;
-%imshow(mat2gray(I));
 colormap gray;
 imagesc(I, [-0.5 0.5])
-%imwrite(I, '../results/I.png');
+imwrite(uint8((I+0.5)*255), '../results/I.png');
 entropyI = entropy(I)
 
+%figure;
+%imshow(mat2gray(In, [-0.5 0.5]));
 figure;
-%imshow(mat2gray(In));
 colormap gray;
 imagesc(In, [-0.5 0.5])
-%imwrite(In, '../results/In.png');
+imwrite(uint8((In+0.5)*255), '../results/In.png');
 entropyInoised = entropy(In)
-if is_octave && ~verLessThan('matlab', '8.3') %if Matlab R2014a and above
+if is_octave || ~verLessThan('matlab', '8.3') %if Matlab R2014a and above
 	PSNR_In = psnr(In, I)
 end
 
+%figure;
+%imshow(mat2gray(Iout, [-0.5 0.5]));
 figure;
-%imshow(mat2gray(Iout));
 colormap gray;
 imagesc(Iout, [-0.5 0.5]);
-%imwrite(Iout, '../results/Iout.png');
+imwrite(uint8((Iout+0.5)*255), '../results/Iout.png');
 entropyIout = entropy(Iout)
-if is_octave && ~verLessThan('matlab', '8.3') %if Matlab R2014a and above
+if is_octave || ~verLessThan('matlab', '8.3') %if Matlab R2014a and above
 	PSNR_Iout = psnr(Iout, I)
 end
+
+Idiff = I - Iout;
+figure;
+colormap(parula);
+imagesc(Idiff, [-1 1]);
+
 sparsity = sum(Sout(:)~=0)/length(Sout(:));
 addpath('sc2');
-[fobj, fresidue, fsparsity] = getObjective2(B, Sout, Xb, pars.sparsity_func, pars.noise_var, pars.beta, pars.sigma, pars.epsilon);
+[fobj, fresidue, fsparsity] = getObjective2(B, Sout, Xb, pars.sparsity_func, pars.noise_var, pars.beta, pars.sigma, pars.epsilon)
 fprintf('sparsity = %g\n', sparsity);
-save('../results/Sout.mat', 'Sout');
+save('../results/images.mat', 'I', 'In', 'Iout', 'Idiff', 'Sout', 'gamma');
 if is_octave
     save('../results/stats.mat', 'entropyI', 'entropyInoised', 'entropyIout', 'sparsity', 'fobj', 'fresidue', 'fsparsity', 'PSNR_In', 'PSNR_Iout');
 else
