@@ -72,13 +72,17 @@ end
 %%%%%%%%%%%%%%%%%
 
 [szH szW] = size(B);
-winsize = sqrt(pars.patch_size);
+winsize = sqrt(szH);
 foo = h - winsize + 1;
 bar = w - winsize + 1;
 X = getdata_imagearray_all(In, winsize);
 [Xh Xw] = size(X);
 if (nargin<3) || isempty(gamma)
-    gamma = pars.beta/pars.sigma*pars.noise_var;
+	if exist('pars')% && ~isempty(pars)
+    	gamma = pars.beta/pars.sigma*pars.noise_var;
+	else
+		gamma = 0.1; %TODO or throw error?
+	end
 end
 Sout = l1ls_featuresign (B, X, gamma); %TODO FIXME : too many coefficients activated means that the dictionnary is bad (minimizes sparsity but not error)
 %Sout = l1ls_featuresign (B, X, 0.001);
@@ -190,7 +194,11 @@ imagesc(Idiff, [-1 1]);
 
 sparsity = sum(Sout(:)~=0)/length(Sout(:));
 addpath('sc2');
-[fobj, fresidue, fsparsity] = getObjective2(B, Sout, Xb, pars.sparsity_func, pars.noise_var, pars.beta, pars.sigma, pars.epsilon)
+if exist('pars') % && ~isempty(pars)
+	[fobj, fresidue, fsparsity] = getObjective2(B, Sout, Xb, pars.sparsity_func, pars.noise_var, pars.beta, pars.sigma, pars.epsilon)
+else
+	[fobj, fresidue, fsparsity] = getObjective2(B, Sout, Xb, 'L1', '1', gamma, '1', [])
+end
 fprintf('sparsity = %g\n', sparsity);
 save('../results/images.mat', 'I', 'In', 'Iout', 'Idiff', 'Sout', 'gamma');
 if is_octave

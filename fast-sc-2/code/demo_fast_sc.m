@@ -10,27 +10,24 @@ if is_octave
     pkg load image;
 end
 
-% natural image data
+% image data
 %load ../data/IMAGES.mat
 %X = getdata_imagearray(IMAGES, 14, 10000);
-load ../data/IMAGES_RAW.mat
-%IMAGESr = im2uint8(IMAGESr);
-X = getdata_imagearray(IMAGESr, 8, 4096);
+%load ../data/IMAGES_RAW.mat
+%X = getdata_imagearray(IMAGESr, 8, 4096);
 %X = getdata_imagearray(IMAGESr, 8, 100000);
 %X = getdata_imagearray_all(IMAGESr, 8);
 %X = getdata_imagearray_all(IMAGESr(:,:,4), 8);
-%X = getdata_imagearray_all(IMAGESr(:,:,1), 8);
-%load ../../res/att_faces/faces.mat
-%X = getdata_imagearray(faces, 8, 4096);
-%X = getdata_imagearray(faces, 8, 400000);
-%X = getdata_imagearray_all(faces, 8);
-%X = getdata_imagearray_all(faces(:,:,1), 8);
+load ../../res/att_faces/facesScaled.mat
+X = getdata_imagearray(faces, 8, 4096);
+%load ../../res/ZDB/zdbSmallScaled.mat
+%X = getdata_imagearray(zdb, 8, 4096);
 
 % sparse coding parameters
 num_bases = 128;
-beta = 0.4;
+beta = 0.1;
 batch_size = 1000;
-num_iters = 15;
+num_iters = 10;
 if opt_choice==1
     sparsity_func= 'L1';
     epsilon = [];
@@ -39,7 +36,8 @@ elseif opt_choice==2
     epsilon = 0.01;
 end
 
-Binit = [];
+Binit = []; %Binit = getdata_imagearray(faces, 8, num_bases);
+
 fname_save = sprintf('../results/sc_%s_b%d_beta%g_%s', sparsity_func, num_bases, beta, datestr(now, 30));
 
 % run fast sparse coding
