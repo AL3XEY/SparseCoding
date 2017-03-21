@@ -10,7 +10,7 @@ PHASE = arg(IMG2);
 figure;
 imshow(mat2gray(MODULE2));
 figure
-imshow(mat2gray(PHASE));
+imshow(mat2gray(PHASE)); 
 
 figure;
 PHASE = rot90(PHASE);
