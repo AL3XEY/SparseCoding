@@ -9,6 +9,7 @@ function [I In Iout Sout] = reconstruction(img, datas, gamma, options, param) %T
 % TODO param
 % TODO gamma
 
+%interpretation of the input parameters
 if is_octave
 	pkg load image;
 	type = typeinfo(img);
@@ -54,41 +55,38 @@ else
 end
 [h w] = size(I);
 
-%%%%%%%%%%%%%%%%%
-%%%%% NOISE %%%%%
-%%%%%%%%%%%%%%%%%
+%%%%% Noise addition option %%%%%
 In = I;
 if strcmp(options, 'noise') && ~(nargin<4) %exist(options) && ~isempty(options)
-	%In = imnoise(I, 'gaussian');
+	%Type 1
+	In = imnoise(I+0.5, 'speckle', 0.001)-0.5;
 
-	sigma = 0.1;
-	In = I + sigma*randn(h, w);
+	%In = I + (randn(h, w)-0.5)/100; %random noise generation
 
 	%randnoise = reshape(round(rand(512^2,1)),512,512);
 	%In = I.*randnoise;
 
 	%https://fr.mathworks.com/help/stats/binornd.html?requestedDomain=www.mathworks.com
 end
-%%%%%%%%%%%%%%%%%
 
 [szH szW] = size(B);
 winsize = sqrt(szH);
 foo = h - winsize + 1;
 bar = w - winsize + 1;
-X = getdata_imagearray_all(In, winsize);
+X = getdata_imagearray_all(In, winsize); %get all the patches in image as vectors
 [Xh Xw] = size(X);
 if (nargin<3) || isempty(gamma)
 	if exist('pars')% && ~isempty(pars)
-    	gamma = pars.beta/pars.sigma*pars.noise_var;
+    	gamma = pars.beta/pars.sigma*pars.noise_var; %get gamma from input data
 	else
-		gamma = 0.1; %TODO or throw error?
+		gamma = 0.1; %default gamma %TODO or throw error?
 	end
 end
-Sout = l1ls_featuresign (B, X, gamma); %TODO FIXME : too many coefficients activated means that the dictionnary is bad (minimizes sparsity but not error)
-%Sout = l1ls_featuresign (B, X, 0.001);
+Sout = l1ls_featuresign (B, X, gamma); %get the sparse coefficients matrix %"too many coefficients activated" means that the dictionnary is bad (minimizes sparsity but not error)
 
+%%%%% Options : remove_last and add_noise %%%%%
 if ~(nargin<4) && ~isempty(options)%exist(options) && ~isempty(options)
-	if strcmp(options, 'remove_last')
+	if strcmp(options, 'remove_last') %remove the N coefficients with the smallest values (where N is the value of input parameter param, default = 1)
 		if (nargin<5) && ~isempty(param)%~exist(param) || isempty(param)
 			param = 1;
 		end
@@ -108,7 +106,7 @@ if ~(nargin<4) && ~isempty(options)%exist(options) && ~isempty(options)
 			end
 		end
 	end
-	if strcmp(options, 'add_random')
+	if strcmp(options, 'add_random') %add N random coefficients with the random values (lesser than the actual max coefficient value) (where N is the value of input parameter param, default = 1)
 		if nargin<5 && ~isempty(param)
 			param = 1;
 		end
@@ -137,12 +135,13 @@ if ~(nargin<4) && ~isempty(options)%exist(options) && ~isempty(options)
 	end
 end
 
-Xout = B*Sout;
+Xout = B*Sout; % get output signals (patches) using sparse coefficients matrix
 [XoutH XoutW] = size(Xout);
 Xb = zeros(XoutH, XoutW);
 Iout = zeros(h,w);
 meanCoef = zeros(h,w);
 
+% get output image by reshaping the vectors into matrices + get mean value for each pixel
 cpt = 1;
 for i=1:foo %TODO rename!
 	for j=1:bar %TODO rename!
@@ -187,12 +186,14 @@ if is_octave || ~verLessThan('matlab', '8.3') %if Matlab R2014a and above
 	PSNR_Iout = psnr(Iout, I)
 end
 
-Idiff = I - Iout;
+Idiff = abs(I - Iout);
 figure;
-colormap(parula);
+%colormap(parula);
+colormap(jet);
 imagesc(Idiff, [-1 1]);
 
 sparsity = sum(Sout(:)~=0)/length(Sout(:));
+avgnzero = nnz(Sout)/size(Sout,2);
 addpath('sc2');
 if exist('pars') % && ~isempty(pars)
 	[fobj, fresidue, fsparsity] = getObjective2(B, Sout, Xb, pars.sparsity_func, pars.noise_var, pars.beta, pars.sigma, pars.epsilon)
@@ -200,8 +201,9 @@ else
 	[fobj, fresidue, fsparsity] = getObjective2(B, Sout, Xb, 'L1', '1', gamma, '1', [])
 end
 fprintf('sparsity = %g\n', sparsity);
+fprintf('avgnzero = %g\n', avgnzero);
 save('../results/images.mat', 'I', 'In', 'Iout', 'Idiff', 'Sout', 'gamma');
-if is_octave
+if is_octave  || ~verLessThan('matlab', '8.3') %if Matlab R2014a and above
     save('../results/stats.mat', 'entropyI', 'entropyInoised', 'entropyIout', 'sparsity', 'fobj', 'fresidue', 'fsparsity', 'PSNR_In', 'PSNR_Iout');
 else
     save('../results/stats.mat', 'entropyI', 'entropyInoised', 'entropyIout', 'sparsity', 'fobj', 'fresidue', 'fsparsity');
