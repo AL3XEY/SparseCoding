@@ -19,15 +19,16 @@ end
 %X = getdata_imagearray_all(IMAGESr, 8);
 %X = getdata_imagearray_all(IMAGESr(:,:,4), 8);
 load ../../res/att_faces/facesScaled.mat
-X = getdata_imagearray(faces, 8, 4096);
+%X = getdata_imagearray(faces, 8, 4096);
+X = getdata_imagearray_all(faces(:,:,1:20), 8);
 %load ../../res/ZDB/zdbSmallScaled.mat
 %X = getdata_imagearray(zdb, 8, 4096);
 
 % sparse coding parameters
-num_bases = 128;
-beta = 0.1;
+num_bases = 128; %number of atoms in the dictionnary
+beta = 0.1; %Lagrange multiplier
 batch_size = 1000;
-num_iters = 10;
+num_iters = 3; %number of iterations of the learning algorithm
 if opt_choice==1
     sparsity_func= 'L1';
     epsilon = [];
