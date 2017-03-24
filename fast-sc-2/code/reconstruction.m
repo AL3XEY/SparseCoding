@@ -1,4 +1,4 @@
-function [I In Iout Sout] = reconstruction(img, datas, gamma, options, param) %TODO multiple options
+function [I In Iout Sout entropyI entropyInoised entropyIout PSNR_In PSNR_Iout fresidue fsparsity sparsity] = reconstruction(img, datas, gamma, options, param) %TODO multiple options
 
 % I : image used for reconstruction (noisy or not)
 % Sout : output sparse coefficients
@@ -173,6 +173,8 @@ imwrite(uint8((In+0.5)*255), '../results/In.png');
 entropyInoised = entropy(In)
 if is_octave || ~verLessThan('matlab', '8.3') %if Matlab R2014a and above
 	PSNR_In = psnr(In, I)
+else
+	PSNR_In = -1;
 end
 
 %figure;
@@ -184,6 +186,8 @@ imwrite(uint8((Iout+0.5)*255), '../results/Iout.png');
 entropyIout = entropy(Iout)
 if is_octave || ~verLessThan('matlab', '8.3') %if Matlab R2014a and above
 	PSNR_Iout = psnr(Iout, I)
+else
+	PSNR_Iout = -1;
 end
 
 Idiff = abs(I - Iout);
@@ -203,8 +207,4 @@ end
 fprintf('sparsity = %g\n', sparsity);
 fprintf('avgnzero = %g\n', avgnzero);
 save('../results/images.mat', 'I', 'In', 'Iout', 'Idiff', 'Sout', 'gamma');
-if is_octave  || ~verLessThan('matlab', '8.3') %if Matlab R2014a and above
-    save('../results/stats.mat', 'entropyI', 'entropyInoised', 'entropyIout', 'sparsity', 'fobj', 'fresidue', 'fsparsity', 'PSNR_In', 'PSNR_Iout');
-else
-    save('../results/stats.mat', 'entropyI', 'entropyInoised', 'entropyIout', 'sparsity', 'fobj', 'fresidue', 'fsparsity');
-end
+save('../results/stats.mat', 'entropyI', 'entropyInoised', 'entropyIout', 'sparsity', 'fresidue', 'fsparsity', 'PSNR_In', 'PSNR_Iout');
