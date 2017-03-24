@@ -55,13 +55,13 @@ imgout = laplacianPyramidReconstruction(Iout, n_levels);
 for j=1:n_levels+1
 	figure;
 	colormap gray;
-	imagesc(Lplac{j}, [-0.5 0.5]);
+	imagesc(Lplac{j}, [0 1]);
 end
 
 for j=1:n_levels+1
 	figure;
 	colormap gray;
-	imagesc(Iout{j}, [-0.5 0.5]);
+	imagesc(Iout{j}, [0 1]);
 end
 
 img = img-0.5;
