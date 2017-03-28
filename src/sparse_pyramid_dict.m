@@ -76,7 +76,11 @@ colormap gray;
 imagesc(imgout, [-0.5 0.5]);
 entropyImg = entropy(img)
 entropyImgout = entropy(imgout)
-PSNRImgout = psnr(imgout, img)
+if is_octave || ~verLessThan('matlab', '8.3') %if Matlab R2014a and above
+	PSNRImgout = psnr(imgout, img)
+else
+	PSNRImgout = -1;
+end
 
 meanPSNR = 0;
 meanSparsity = 0;
