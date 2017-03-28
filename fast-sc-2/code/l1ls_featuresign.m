@@ -101,7 +101,7 @@ for iter=1:ITERMAX
     act_indx1 = find(act == 1);
 
     if length(act_indx1)>rankA
-        warning('sparsity penalty is too small: too many coefficients are activated');
+%        warning('sparsity penalty is too small: too many coefficients are activated');
         return;
     end
 
@@ -117,7 +117,7 @@ for iter=1:ITERMAX
         k=k+1;
 
         if k>ITERMAX
-            warning('Maximum number of iteration reached. The solution may not be optimal');
+%            warning('Maximum number of iteration reached. The solution may not be optimal');
             % save(fname_debug, 'A', 'y', 'gamma', 'xinit');
             return;
         end
@@ -139,7 +139,7 @@ for iter=1:ITERMAX
 end
 
 if iter >= ITERMAX
-    warning('Maximum number of iteration reached. The solution may not be optimal');
+%    warning('Maximum number of iteration reached. The solution may not be optimal');
     % save(fname_debug, 'A', 'y', 'gamma', 'xinit');
 end
 
