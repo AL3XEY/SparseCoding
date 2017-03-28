@@ -4,7 +4,7 @@ function X = getdata_imagearray_all(IMAGES, winsize)
 BUFF=4;
 foo = h - winsize + 1;
 bar = w - winsize + 1;
-patches_per_image = foo^2;
+patches_per_image = foo*bar;
 num_patches = num_images * patches_per_image;
 cpt = 1;
 % extract subimages to make data vector X
