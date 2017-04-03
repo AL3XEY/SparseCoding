@@ -18,7 +18,7 @@ if is_octave
 		I = IMAGESr(:,:,img);
 	elseif strcmp(type, 'sq_string')
 		I = imread(img);
-	elseif strcmp(type, 'diagonal matrix') %TODO useful?
+	elseif strcmp(type, 'diagonal matrix') || strcmp(type, 'matrix') %TODO useful?
 		I = img;
 	else
 		error('img is not a filename nor an index number nor a matrix')
@@ -106,6 +106,26 @@ if ~(nargin<4) && ~isempty(options)%exist(options) && ~isempty(options)
 			end
 		end
 	end
+	if strcmp(options, 'remove_first') %remove the N coefficients with the highest values (where N is the value of input parameter param, default = 1)
+		if (nargin<5) && ~isempty(param)%~exist(param) || isempty(param)
+			param = 1;
+		end
+		for i=1:param
+			for j=1:Xw
+				nzeros = find(Sout(:,j));
+                if ~isempty(nzeros)
+                    tmp = zeros(size(nzeros,1),2);
+                    tmp(:,1) = nzeros(:);
+                    nzeros = tmp;
+                    for k=1:size(nzeros)
+                        nzeros(k,2) = Sout(nzeros(k,1),j);
+                    end
+                    [value index] = max(abs(nzeros(:,2)));
+                    Sout(nzeros(index,1),j) = 0;
+                end
+			end
+		end
+	end
 	if strcmp(options, 'add_random') %add N random coefficients with the random values (lesser than the actual max coefficient value) (where N is the value of input parameter param, default = 1)
 		if nargin<5 && ~isempty(param)
 			param = 1;
@@ -131,6 +151,58 @@ if ~(nargin<4) && ~isempty(options)%exist(options) && ~isempty(options)
 					%Sout(spl,j) = (rand()-rand())*maxv/2;
                 end
 			end
+		end
+	end
+	if strcmp(options, 'edges')
+		%if nargin<5 && ~isempty(param)
+		%	param = 1;
+		%end
+		Iedges = edge(I, 'sobel');
+		Xedges = getdata_imagearray_all(Iedges, winsize);
+		for j=1:Xw
+			%if(~isempty(imgEdges(imgEdges==1)))
+			if(~isempty(find(Xedges(:,j)~=0)))
+				method = 2;
+
+				%%%
+				if method==1
+					nzeros = find(Sout(:,j));
+	                if ~isempty(nzeros)
+						Btmp = B;
+		            	tmp = zeros(size(nzeros,1),2);
+		            	tmp(:,1) = nzeros(:);
+		            	nzeros = tmp;
+		            	for k=1:size(nzeros)
+		            		nzeros(k,2) = Sout(nzeros(k,1),j);
+		            	end
+		               [value index] = max(abs(nzeros(:,2)));
+						Btmp(:,nzeros(index,1)) = 0;
+						[bla bli] = size(Btmp)
+						[blah blih] = size(Sout(:,j))
+						Souttmp = l1ls_featuresign (Btmp, Sout(:,j), gamma);
+						Sout(:,j) = Souttmp(:, j);
+	                end
+				end
+				%%%
+
+				%%%
+				if method == 2
+					nzeros = find(Sout(:,j));
+	                if ~isempty(nzeros)
+		                tmp = zeros(size(nzeros,1),2);
+		                tmp(:,1) = nzeros(:);
+		                nzeros = tmp;
+		                for k=1:size(nzeros)
+		                    nzeros(k,2) = Sout(nzeros(k,1),j);
+		                end
+		                [value index] = max(abs(nzeros(:,2)));
+						Sout(nzeros(index,1),j) = 0;
+	                end
+				end
+				%%%
+
+				%Sout(:,j) =
+            end
 		end
 	end
 end
@@ -162,7 +234,7 @@ figure;
 colormap gray;
 imagesc(I, [-0.5 0.5])
 imwrite(uint8((I+0.5)*255), '../results/I.png');
-entropyI = entropy(I)
+entropyI = entropy(I);
 
 %figure;
 %imshow(mat2gray(In, [-0.5 0.5]));
@@ -170,9 +242,9 @@ figure;
 colormap gray;
 imagesc(In, [-0.5 0.5])
 imwrite(uint8((In+0.5)*255), '../results/In.png');
-entropyInoised = entropy(In)
+entropyIn = entropy(In);
 if is_octave || ~verLessThan('matlab', '8.3') %if Matlab R2014a and above
-	PSNR_In = psnr(In, I)
+	PSNR_In = psnr(In, I);
 else
 	PSNR_In = -1;
 end
@@ -183,9 +255,9 @@ figure;
 colormap gray;
 imagesc(Iout, [-0.5 0.5]);
 imwrite(uint8((Iout+0.5)*255), '../results/Iout.png');
-entropyIout = entropy(Iout)
+entropyIout = entropy(Iout);
 if is_octave || ~verLessThan('matlab', '8.3') %if Matlab R2014a and above
-	PSNR_Iout = psnr(Iout, I)
+	PSNR_Iout = psnr(Iout, I);
 else
 	PSNR_Iout = -1;
 end
@@ -196,15 +268,49 @@ figure;
 colormap(jet);
 imagesc(Idiff, [-1 1]);
 
+if exist('Iedges')
+	figure;
+	colormap gray;
+	imagesc(Iedges)
+end
+
 sparsity = sum(Sout(:)~=0)/length(Sout(:));
 avgnzero = nnz(Sout)/size(Sout,2);
+nzero = nnz(Sout);
+
+nzeromin = size(Sout,1);
+nzerominidx = -1;
+nzeromax = 0;
+nzeromaxidx = -1;
+for j=1:size(Sout,2) %Xw
+	tempnzero = nnz(Sout(:,j));
+	if tempnzero <= nzeromin
+		nzeromin = tempnzero;
+		nzerominidx = j;
+	end
+	if tempnzero >= nzeromax
+		nzeromax = tempnzero;
+		nzeromaxidx = j;
+	end
+end
+
 addpath('sc2');
 if exist('pars') % && ~isempty(pars)
 	[fobj, fresidue, fsparsity] = getObjective2(B, Sout, Xb, pars.sparsity_func, pars.noise_var, pars.beta, pars.sigma, pars.epsilon)
 else
 	[fobj, fresidue, fsparsity] = getObjective2(B, Sout, Xb, 'L1', '1', gamma, '1', [])
 end
+fprintf('entropyI = %g\n', entropyI);
+fprintf('entropyIn = %g\n', entropyIn);
+fprintf('PSNR_In = %g\n', PSNR_In);
+fprintf('entropyIout = %g\n', entropyIout);
+fprintf('PSNR_Iout = %g\n', PSNR_Iout);
+fprintf('fresidue = %g\n', fresidue);
+fprintf('fsparsity = %g\n', fsparsity);
 fprintf('sparsity = %g\n', sparsity);
 fprintf('avgnzero = %g\n', avgnzero);
+fprintf('nzero = %g\n', nzero);
+fprintf('nzeromin = %g\n', nzeromin);
+fprintf('nzeromax = %g\n', nzeromax);
 save('../results/images.mat', 'I', 'In', 'Iout', 'Idiff', 'Sout', 'gamma');
-save('../results/stats.mat', 'entropyI', 'entropyInoised', 'entropyIout', 'sparsity', 'fresidue', 'fsparsity', 'PSNR_In', 'PSNR_Iout');
+save('../results/stats.mat', 'entropyI', 'entropyIn', 'entropyIout', 'sparsity', 'fresidue', 'fsparsity', 'PSNR_In', 'PSNR_Iout', 'nzero', 'nzeromin', 'nzeromax');
