@@ -1,13 +1,13 @@
 function [I In Iout Sout entropyI entropyInoised entropyIout PSNR_In PSNR_Iout fresidue fsparsity sparsity] = reconstruction(img, datas, gamma, options, param) %TODO multiple options
 
 % I : image used for reconstruction (noisy or not)
-% Sout : output sparse coefficients
 % Iout : image recovered using sparse coding
+% Sout : output sparse coefficients
 % img : filename (string), index in the dataset (integer 1 - 10) or actual image (matrix)
 % datas : filename (string) for dictionnary or actual dictionnary (matrix)
-% TODO options
-% TODO param
-% TODO gamma
+% gamma : Lagrange multiplier used for sparseness optimization
+% options : string, either 'remove_first', 'remove_last', 'add_random', 'noise' or 'edges' (see in the code below)
+% param : parameter associated with the option selected
 
 %interpretation of the input parameters
 if is_octave
@@ -73,18 +73,18 @@ end
 winsize = sqrt(szH);
 foo = h - winsize + 1;
 bar = w - winsize + 1;
-X = getdata_imagearray_all(In, winsize); %get all the patches in image as vectors
+X = getdata_imagearray_all(In, winsize); %get all the patches in the image as vectors
 [Xh Xw] = size(X);
 if (nargin<3) || isempty(gamma)
-	if exist('pars')% && ~isempty(pars)
+	if exist('pars') && ~isempty('pars')
     	gamma = pars.beta/pars.sigma*pars.noise_var; %get gamma from input data
 	else
 		gamma = 0.1; %default gamma %TODO or throw error?
 	end
 end
-Sout = l1ls_featuresign (B, X, gamma); %get the sparse coefficients matrix %"too many coefficients activated" means that the dictionnary is bad (minimizes sparsity but not error)
+Sout = l1ls_featuresign (B, X, gamma); %get the sparse coefficients matrix. "too many coefficients activated" means that the dictionnary is bad (minimizes error sparsity but not sparsity) or the gamma parameter is too low.
 
-%%%%% Options : remove_last and add_noise %%%%%
+%%%%% Other options : remove_first, remove_last, add_random and edges %%%%%
 if ~(nargin<4) && ~isempty(options)%exist(options) && ~isempty(options)
 	if strcmp(options, 'remove_last') %remove the N coefficients with the smallest values (where N is the value of input parameter param, default = 1)
 		if (nargin<5) && ~isempty(param)%~exist(param) || isempty(param)
@@ -153,16 +153,18 @@ if ~(nargin<4) && ~isempty(options)%exist(options) && ~isempty(options)
 			end
 		end
 	end
-	if strcmp(options, 'edges')
+	if strcmp(options, 'edges') %TODO WIP
 		%if nargin<5 && ~isempty(param)
 		%	param = 1;
 		%end
 		Iedges = edge(I, 'sobel');
 		Xedges = getdata_imagearray_all(Iedges, winsize);
+		method = 1;
 		for j=1:Xw
 			%if(~isempty(imgEdges(imgEdges==1)))
-			if(~isempty(find(Xedges(:,j)~=0)))
-				method = 2;
+			%if(~isempty(find(Xedges(:,j)~=0)))
+			if(sum(sum(Xedges(:,j))) > 2)
+				%disp(j)
 
 				%%%
 				if method==1
@@ -175,29 +177,35 @@ if ~(nargin<4) && ~isempty(options)%exist(options) && ~isempty(options)
 		            	for k=1:size(nzeros)
 		            		nzeros(k,2) = Sout(nzeros(k,1),j);
 		            	end
-		               [value index] = max(abs(nzeros(:,2)));
+		                [value index] = max(abs(nzeros(:,2)));
 						Btmp(:,nzeros(index,1)) = 0;
-						[bla bli] = size(Btmp)
-						[blah blih] = size(Sout(:,j))
-						Souttmp = l1ls_featuresign (Btmp, Sout(:,j), gamma);
-						Sout(:,j) = Souttmp(:, j);
+						%Souttmp = l1ls_featuresign (Btmp, X(:,j), gamma);
+						%Souttmp = l1ls_featuresign (Btmp, X(:,j), gamma*10);
+						Souttmp = l1ls_featuresign (Btmp, X(:,j), gamma/10);
+						Sout(:,j) = Souttmp(:, 1);
 	                end
 				end
 				%%%
 
 				%%%
-				if method == 2
-					nzeros = find(Sout(:,j));
-	                if ~isempty(nzeros)
-		                tmp = zeros(size(nzeros,1),2);
-		                tmp(:,1) = nzeros(:);
-		                nzeros = tmp;
-		                for k=1:size(nzeros)
-		                    nzeros(k,2) = Sout(nzeros(k,1),j);
+				if method == 2 || method == 3 %remove first / last, but only on the edges
+					for i=1:param
+						nzeros = find(Sout(:,j));
+		                if ~isempty(nzeros)
+			                tmp = zeros(size(nzeros,1),2);
+			                tmp(:,1) = nzeros(:);
+			                nzeros = tmp;
+			                for k=1:size(nzeros)
+			                    nzeros(k,2) = Sout(nzeros(k,1),j);
+			                end
+							if method == 2 %remove first
+			                	[value index] = max(abs(nzeros(:,2)));
+							else %remove last
+								[value index] = min(abs(nzeros(:,2)));
+							end
+							Sout(nzeros(index,1),j) = 0;
 		                end
-		                [value index] = max(abs(nzeros(:,2)));
-						Sout(nzeros(index,1),j) = 0;
-	                end
+					end
 				end
 				%%%
 
@@ -226,13 +234,13 @@ end
 
 Iout = Iout ./ meanCoef;
 
-%%%%% Show and save the images, coefficients and stats %%%%%
+%%%%% Display and save the images, coefficients and stats %%%%%
 
 %figure;
 %imshow(mat2gray(I, [-0.5 0.5]));
 figure;
 colormap gray;
-imagesc(I, [-0.5 0.5])
+imagesc(I, [-0.5 0.5]);
 imwrite(uint8((I+0.5)*255), '../results/I.png');
 entropyI = entropy(I);
 
@@ -240,7 +248,7 @@ entropyI = entropy(I);
 %imshow(mat2gray(In, [-0.5 0.5]));
 figure;
 colormap gray;
-imagesc(In, [-0.5 0.5])
+imagesc(In, [-0.5 0.5]);
 imwrite(uint8((In+0.5)*255), '../results/In.png');
 entropyIn = entropy(In);
 if is_octave || ~verLessThan('matlab', '8.3') %if Matlab R2014a and above
@@ -267,11 +275,12 @@ figure;
 %colormap(parula);
 colormap(jet);
 imagesc(Idiff, [-1 1]);
+saveas(gcf, '../results/Idiff.png');
 
 if exist('Iedges')
 	figure;
 	colormap gray;
-	imagesc(Iedges)
+	imagesc(Iedges);
 end
 
 sparsity = sum(Sout(:)~=0)/length(Sout(:));
