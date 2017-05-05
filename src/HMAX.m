@@ -103,8 +103,8 @@ for scal=1:7
 	%nHL = 1000;
 	sz = pool_sz(scal);
 	HLfilters{scal} = zeros(sz, sz, nth, nHL);
-	rdx = 1+round(rand(10,1).*(pxm-sz-1)); %TODO unique ?
-	rdy = 1+round(rand(10,1).*(pxm-sz-1));
+	rdx = 1+floor(rand(nHL,1).*(pxm-sz)); %TODO unique ?
+	rdy = 1+floor(rand(nHL,1).*(pym-sz)); %FIXME caution! if input image is too short, pym-sz or pxm-sz can be too small
 	for cpt=1:nHL
 		HLfilters{scal}(1:sz,1:sz,:,cpt) = C1{scal}(rdx(cpt):rdx(cpt)+sz-1,rdy(cpt):rdy(cpt)+sz-1,:);
 
@@ -135,14 +135,14 @@ if display
 	vis = max(max(max(imgS2(:,:,:))));
 	imshow(uint8(255*(imgS2/vis + 0.3)))
 	figure
-	imgS2 = L3{1}(:,:,2);
+	imgS2 = S2{1}(:,:,2);
 	imshow(uint8(255*(imgS2/vis + 0.3)))
 	figure
-	imgS2 = L3{6}(:,:,1);
+	imgS2 = S2{6}(:,:,1);
 	vis = max(max(max(imgS2(:,:,:))));
 	imshow(uint8(255*(imgS2/vis + 0.3)))
 	figure
-	imgS2 = L3{6}(:,:,2);
+	imgS2 = S2{6}(:,:,2);
 	imshow(uint8(255*(imgS2/vis + 0.3)))
 end
 
