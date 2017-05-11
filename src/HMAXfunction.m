@@ -1,20 +1,27 @@
-function [C2] = HMAXfunction(HLfilters, img, display = false)
+function [C2] = HMAXfunction(HLfilters, img, nscales=8, norientations=12, display = false)
+	%nscales=8;norientations=12;display=false;
 	% Build the Gabor filters used by HMAX first layer (S1). For each of the 8 scales
 	% the program can build the nth = 12 (here) filters corresponding to the different orientations.
 	global filter_sz = [7,11,15,19,23,27,31,35];
 	global sigma = [2.8,4.5,6.7,8.2,10.2,12.3,14.6,17.0];
 	global lambda = [3.5,5.6,7.9,10.3,12.7,15.5,18.2,21.2];
 	pool_sz = [8,10,12,14,16,18,22,24];
-	global gam = 0.3; global nth = 12;
+	global gam = 0.3;
+	global nth = norientations;
 
-	img = rot90(rgb2hsv(img)(:,:,3),0); % convert it to grayscale
+	if size(img,3)==3
+		img = rot90(rgb2hsv(img)(:,:,3),0); % convert it to grayscale
+	end
 	[dx,dy] = size(img);
 	figure
 	imshow(uint8(255*img)) % show original image
 
+	%%%%%%%%%%%%
+	%%%  S1  %%%
+	%%%%%%%%%%%%
 	%% Build the filters for the different orientations %%
 	th = [0:nth-1]*pi/nth; % The orientations
-	for scal = 1:8
+	for scal = 1:nscales
 		nxy = filter_sz(scal); % size of the filter
 		xx = [-(nxy-1)/2:(nxy-1)/2];
 		yy = xx;
@@ -52,8 +59,10 @@ function [C2] = HMAXfunction(HLfilters, img, display = false)
 		end
 	end
 
-		% taille des pools
-	for scal=1:7
+	%%%%%%%%%%%%
+	%%%  C1  %%%
+	%%%%%%%%%%%%
+	for scal=1:nscales-1
 		sz = pool_sz(scal);
 		pxm = floor(dx/sz); pym = floor(dy/sz);
 
@@ -76,6 +85,9 @@ function [C2] = HMAXfunction(HLfilters, img, display = false)
 			endfor
 		end
 
+		%%%%%%%%%%%%
+		%%%  S2  %%%
+		%%%%%%%%%%%%
 		%%%%% S2 layer - compute the response of the HLfilters (prototypes randomly taken from C1 layers of a large dataset) to every C1 patch %%%%%
 		%nHL is the number of prototypes
 		nHL = size(HLfilters{scal},4);
@@ -103,8 +115,8 @@ function [C2] = HMAXfunction(HLfilters, img, display = false)
 	end
 
 	%Display a small part of the S2 layer
-	%if display
-		for scal=1:6
+	if display
+		for scal=1:nscales-2
 			for cpt=1:nHL
 				figure
 				imgS2 = S2{scal}(:,:,cpt);
@@ -112,14 +124,18 @@ function [C2] = HMAXfunction(HLfilters, img, display = false)
 				imshow(uint8(255*(imgS2/vis + 0.3)))
 			end
 		end
-	%end
+	end
 
+	%%%%%%%%%%%%
+	%%%  C1  %%%
+	%%%%%%%%%%%%
 	%%%%% C2 layer - max response from the S2 layer %%%%%
 	C2 = zeros(nHL, 1);
-	for scal=1:7
-		S2b(scal,1:nHL) = max(max(S2{scal}(:,:,1:nHL)));
+	for scal=1:nscales-1
+		S2b(scal,1:nHL) = max(max(S2{scal}(:,:,1:nHL))); %TODO or min ?
 	end
 	C2(1:nHL) = max(S2b(:,1:nHL));
+	C2 = C2';
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -137,9 +153,13 @@ endfunction
 close all
 clear all
 clc
+nscales = 8;
+norientations = 12;
 display = false;
 img = imread('../res/Californie_m.JPG');
 load('HLfilters_2');
 tic
-C2 = HMAXfunction(HLfilters, img, display)
+C2 = HMAXfunction(HLfilters, img, nscales, norientations, display)
 toc % print execution time
+
+%close all;clear all;clc;nscales = 8;norientations = 12;display = false;img = imread('../res/Californie_m.JPG');load('HLfilters_2');tic;C2 = HMAXfunction(HLfilters, img, nscales, norientations, display);toc;
