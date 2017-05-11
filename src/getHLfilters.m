@@ -1,27 +1,30 @@
-function [HLfilters] = getHLfilters()
-	pkg load image;
-	global filter_sz = [7,11,15,19,23,27,31,35];
+function [HLfilters] = getHLfilters(imgs, nscales=8, norientations=12)
+	%nscales=8; norientations=12;
+	if is_octave
+		pkg load image;
+	end
+	global filter_sz = [7,11,15,19,23,27,31,35]; %FIXME remove Matlab errors
 	global sigma = [2.8,4.5,6.7,8.2,10.2,12.3,14.6,17.0];
 	global lambda = [3.5,5.6,7.9,10.3,12.7,15.5,18.2,21.2];
 	global gam = 0.3;
-	global nth = 12;
+	global nth = norientations;
 
 	display = false; % do we display everything or not
 
 	pool_sz = [8,10,12,14,16,18,22,24];
 
 	%nHL = 2; %the number of prototypes to take per image
-	%nHL = 100;
-	nHL = 1000;
+	nHL = 100;
+	%nHL = 1000;
 
-	nimg = 3;
+	nimg = size(imgs,2);
 
-	for scal=1:7
+	for scal=1:nscales-1
 		sz = pool_sz(scal);
 		HLfilters{scal} = zeros(sz, sz, nth, nHL*nimg);
 	end
 
-	for scal = 1:8 %% Build the filters for the different orientations %%
+	for scal = 1:nscales %% Build the filters for the different orientations %%
 		th = [0:nth-1]*pi/nth; % The orientations
 		nxy = filter_sz(scal); % size of the filter
 		xx = [-(nxy-1)/2:(nxy-1)/2];
@@ -45,17 +48,19 @@ function [HLfilters] = getHLfilters()
 		end
 	end
 
-	imgs{1} = imread('../res/Californie_m.JPG');
-	imgs{2} = imread('../res/lena.ppm');
-	imgs{3} = imresize(imread('../res/ZDB/DSCN1572.JPG'),0.5);
+	%imgs{1} = imread('../res/Californie_m.JPG');
+	%imgs{2} = imread('../res/lena.ppm');
+	%imgs{3} = imresize(imread('../res/ZDB/DSCN1572.JPG'),0.5);
 	for imgcpt=1:nimg
 		img = imgs{imgcpt};
-		img = rot90(rgb2hsv(img)(:,:,3),0); % convert it to grayscale
+		if size(img,3)==3
+			img = rot90(rgb2hsv(img)(:,:,3),0); % convert it to grayscale
+		end
 		[dx,dy] = size(img);
 		figure
 		imshow(uint8(255*img)) % show original image
 
-		for scal = 1:8
+		for scal = 1:nscales
 			for i = [1:nth]
 			  filtr = filt{scal}(:,:,i);
 			  S1{scal}(:,:,i) = abs(filter2(filtr,img)); % filtered images
@@ -74,7 +79,7 @@ function [HLfilters] = getHLfilters()
 		end
 
 			% taille des pools
-		for scal=1:7
+		for scal=1:nscales-1
 			sz = pool_sz(scal);
 			pxm = floor(dx/sz); pym = floor(dy/sz);
 
