@@ -208,7 +208,11 @@ while t < pars.num_trials
             save_figures(pars, t);
         end
 
-        save(experiment.matfname, 't', 'pars', 'B', 'stat');
+		if(is_octave)
+			save(experiment.matfname, 't', 'pars', 'B', 'stat', '-v7');
+		else
+        	save(experiment.matfname, 't', 'pars', 'B', 'stat');
+		end
         fprintf('saved as %s\n', experiment.matfname);
     end
 end

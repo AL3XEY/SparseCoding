@@ -321,5 +321,10 @@ fprintf('avgnzero = %g\n', avgnzero);
 fprintf('nzero = %g\n', nzero);
 fprintf('nzeromin = %g\n', nzeromin);
 fprintf('nzeromax = %g\n', nzeromax);
-save('../results/images.mat', 'I', 'In', 'Iout', 'Idiff', 'Sout', 'gamma');
-save('../results/stats.mat', 'entropyI', 'entropyIn', 'entropyIout', 'sparsity', 'fresidue', 'fsparsity', 'PSNR_In', 'PSNR_Iout', 'nzero', 'nzeromin', 'nzeromax');
+if(is_octave)
+	save('../results/images.mat', 'I', 'In', 'Iout', 'Idiff', 'Sout', 'gamma', '-v7');
+	save('../results/stats.mat', 'entropyI', 'entropyIn', 'entropyIout', 'sparsity', 'fresidue', 'fsparsity', 'PSNR_In', 'PSNR_Iout', 'nzero', 'nzeromin', 'nzeromax', '-v7');
+else
+	save('../results/images.mat', 'I', 'In', 'Iout', 'Idiff', 'Sout', 'gamma');
+	save('../results/stats.mat', 'entropyI', 'entropyIn', 'entropyIout', 'sparsity', 'fresidue', 'fsparsity', 'PSNR_In', 'PSNR_Iout', 'nzero', 'nzeromin', 'nzeromax');
+end
