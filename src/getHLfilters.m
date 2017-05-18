@@ -1,6 +1,4 @@
-function [HLfilters] = getHLfilters(imgs)
-    %nHL = 10; display = false;
-
+function [HLfilters] = getHLfilters(imgs, nHL, display)
     if nargin<2 || isempty(nHL)
         nHL = 10;
         %nHL = 2; %the number of prototypes to take per image
@@ -14,7 +12,7 @@ function [HLfilters] = getHLfilters(imgs)
 	if is_octave
 		pkg load image;
 	end
-	[sigma lambda gam nth nscales filter_sz pool_sz] = HMAXparameters();
+	[sigma,lambda,gam,nth,nscales,filter_sz,pool_sz] = HMAXparameters();
 
 	nimg = size(imgs,2);
 
