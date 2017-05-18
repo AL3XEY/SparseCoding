@@ -1,9 +1,10 @@
-function [out] = gabor(x,y,thet,scale) %
-	[sigma lambda gam nth] = HMAXparameters();
-	lamb = lambda(scale); % we chose the scale and the filter uses the parameters defined above
-	sig = sigma(scale);
+function [out] = gabor(x,y,thet,scale,HMAXparams) %
+	lamb = HMAXparams.lambda(scale); % we chose the scale and the filter uses the parameters defined above
+	sig = HMAXparams.sigma(scale);
 	[nx,ny] = size(x);
-	for i=1:nth
+    x0 = zeros(nx,ny,HMAXparams.nth);
+    y0 = x0;
+	for i=1:HMAXparams.nth
         x0(:,:,i) = x .* cos(thet(i)) + y .* sin(thet(i));
 		y0(:,:,i) = y .* cos(thet(i)) - x .* sin(thet(i));
         %if(thet(i)==pi/2) % FIXME only way I found to counter the fact that cos(pi/2) = cos(1.5708) = 6.123e-17 != 0
@@ -25,5 +26,5 @@ function [out] = gabor(x,y,thet,scale) %
 	%gabE=(gabC+gabD)/sig^2;
 	%gabF=exp(-0.5*gabE);
 	%out = gabF.*gabB;
-	out = exp( -0.5 * (x0.^2 + gam * y0.^2) / sig^2) .* cos(2 * pi * x0 / lamb);
+	out = exp( -0.5 * (x0.^2 + HMAXparams.gam * y0.^2) / sig^2) .* cos(2 * pi * x0 / lamb);
 end

@@ -1,15 +1,13 @@
-function [ S2 ] = getS2( C1, HLfilters, display )
-    if nargin<3 || isempty(display)
+function [ S2 ] = getS2( C1, HLfilters, HMAXparams, display )
+    if nargin<4 || isempty(display)
         display = false;
     end
-
-    [sigma,lambda,gam,nth,nscales,filter_sz,pool_sz] = HMAXparameters();
     
-    S2 = cell(1,nscales-1);
-    for scal=1:nscales-1
+    S2 = cell(1,HMAXparams.nscales-1);
+    for scal=1:HMAXparams.nscales-1
 		%nHL is the number of prototypes
 		nHL = size(HLfilters{scal},4);
-        sz = filter_sz(scal);
+        sz = HMAXparams.filter_sz(scal);
         for cpt=1:nHL
 			%calculate the response of each prototype over each patch of the C1 layer (see Mutch & Lowe 2008)
 			% R = ||X - P||^2 / 2*sigma^2*alpha
@@ -33,7 +31,7 @@ function [ S2 ] = getS2( C1, HLfilters, display )
     end
     %Display the S2 layer
     if display
-        for scal=1:nscales-2
+        for scal=1:HMAXparams.nscales-2
             for cpt=1:nHL
                 figure
                 imgS2 = S2{scal}(:,:,cpt);

@@ -9,20 +9,21 @@ function [HLfilters] = getHLfilters(imgs, nHL, display)
         display = false;
     end
 
-	if is_octave
+    if is_octave
 		pkg load image;
-	end
-	[sigma,lambda,gam,nth,nscales,filter_sz,pool_sz] = HMAXparameters();
+    end
+    
+	HMAXparams = HMAXparameters();
 
 	nimg = size(imgs,2);
 
-    HLfilters = cell(1,nscales-1);
-	for scal=1:nscales-1
-		sz = filter_sz(scal);
-		HLfilters{scal} = zeros(sz, sz, nth, nHL*nimg);
+    HLfilters = cell(1,HMAXparams.nscales-1);
+	for scal=1:HMAXparams.nscales-1
+		sz = HMAXparams.filter_sz(scal);
+		HLfilters{scal} = zeros(sz, sz, HMAXparams.nth, nHL*nimg);
 	end
 
-	gaborFilters = getGaborFilters(display); % build Gabor filters
+	gaborFilters = getGaborFilters(HMAXparams, display); % build Gabor filters
 
 	for imgcpt=1:nimg
 		img = imgs{imgcpt};
@@ -33,13 +34,13 @@ function [HLfilters] = getHLfilters(imgs, nHL, display)
 		figure
 		imshow(uint8(255*img)) % show original image
 
-		S1 = getS1(img, gaborFilters, display);
+		S1 = getS1(img, gaborFilters, HMAXparams, display);
 
-		C1 = getC1(S1, dx, dy, display);
+		C1 = getC1(S1, dx, dy, HMAXparams, display);
 
-		for scal=1:nscales-1
+		for scal=1:HMAXparams.nscales-1
 			%Take random patches from C1
-			sz = filter_sz(scal);
+			sz = HMAXparams.filter_sz(scal);
 			%pxm = floor(dx/sz); pym = floor(dy/sz);
 			[dx2,dy2,~]=size(C1{scal});
 			rdx = 1+floor(rand(nHL,1).*(dx2-sz)); %TODO unique ?
@@ -48,6 +49,6 @@ function [HLfilters] = getHLfilters(imgs, nHL, display)
 				HLfilters{scal}(1:sz,1:sz,:,(imgcpt-1)*nHL+cpt) = C1{scal}(rdx(cpt):rdx(cpt)+sz-1,rdy(cpt):rdy(cpt)+sz-1,:);
 			end
 		end
-		clear S1,C1; %TODO necessary?
+		%clear S1,C1; %TODO necessary?
 	end
 end

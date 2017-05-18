@@ -1,19 +1,19 @@
-function [gaborFilters] = getGaborFilters(display)
-	if nargin<1 || isempty(display)
+function [gaborFilters] = getGaborFilters(HMAXparams, display)
+    if nargin<1 || isempty(display)
         display = false;
     end
-	[sigma lambda gam nth nscales filter_sz pool_sz] = HMAXparameters();
-	gaborFilters = cell(1,nscales);
-	th = [0:nth-1]*pi/nth; % The orientations
-	for scal = 1:nscales
-		nxy = filter_sz(scal); % size of the filter
-		xx = [-(nxy-1)/2:(nxy-1)/2];
+    
+	gaborFilters = cell(1,HMAXparams.nscales);
+	th = [0:HMAXparams.nth-1]*pi/HMAXparams.nth; % The orientations % TODO use parenthesis instead of brackets (does this work on Octave?)
+	for scal = 1:HMAXparams.nscales
+		nxy = HMAXparams.filter_sz(scal); % size of the filter
+		xx = [-(nxy-1)/2:(nxy-1)/2];% TODO use parenthesis instead of brackets (does this work on Octave?)
 		yy = xx;
 		[x,y] = meshgrid(xx,yy);
 
-		[filt] = gabor(x,y,th,scal);
+		[filt] = gabor(x,y,th,scal,HMAXparams);
 		mn = mean(mean(filt));
-		for i=1:nth
+		for i=1:HMAXparams.nth
 			filt(:,:,i) = filt(:,:,i) - mn(i); %centering
 		end
 		%filt = filt - mean(mean(filt)); % centering %Octave only
@@ -24,16 +24,15 @@ function [gaborFilters] = getGaborFilters(display)
 		end
 
 		% display the filters
-		if display
+        if display
 			figure
-			for i = [1:nth]
+            for i = 1:HMAXparams.nth
 			  imas = filt(:,:,i);
 			  nor = max(imas(:));
 			  subplot(3,4,i)
 			  imshow((imas/nor+1)/2)
             end
-		end
-
+        end
 		gaborFilters{scal} = filt;
 	end
 end
