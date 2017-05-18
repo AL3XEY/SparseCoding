@@ -1,5 +1,5 @@
 function [HLfilters] = getHLfilters(imgs)
-    nHL = 10; display = false;
+    %nHL = 10; display = false;
 
     if nargin<2 || isempty(nHL)
         nHL = 10;
