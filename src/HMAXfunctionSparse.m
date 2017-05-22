@@ -40,11 +40,15 @@ function [C2] = HMAXfunctionSparse(dicts, imgs, display)
         %%%  S2  %%%
         %%%%%%%%%%%%
         %%%%% S2 layer - get sparse coefficients matrices %%%%%
-        gamma=0.01; %TODO
+        %gamma=0.01; %TODO
         %gamma=0.1; %TODO
-        %gamma=0.4;
+        gamma=0.4;
         Sout = cell(HMAXparams.nscales,1);
         for scal=1:HMAXparams.nscales-1
+            %C1 normalization
+            mn = min(min(min(C1{scal})));
+            mx = max(max(max(C1{scal})));
+            C1{scal} = ((C1{scal}-mn)/(mx-mn))-0.5;
             for j=1:HMAXparams.nth
                 X = getdata_imagearray_all(C1{scal}(:,:,j), HMAXparams.filter_sz(scal));
                 Sout{scal}(:,:,j) = l1ls_featuresign (dicts{scal}, X, gamma);

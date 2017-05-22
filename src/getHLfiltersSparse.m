@@ -1,4 +1,4 @@
-function [dicts] = getHLfilters(imgs, nHL, display)
+function [dicts] = getHLfiltersSparse(imgs, nHL, display)
     if nargin<2 || isempty(nHL)
         nHL = 10;
         %nHL = 2; %the number of prototypes to take per image
@@ -20,7 +20,9 @@ function [dicts] = getHLfilters(imgs, nHL, display)
     addpath('../fast-sc-2/code/sc2/nrf/');
         
 	nimg = size(imgs,2);
-
+    dicts = cell(HMAXparams.nscales-1,1);
+    S =dicts;
+    stat = dicts;
     HLfilters = cell(1,HMAXparams.nscales-1);
 	for scal=1:HMAXparams.nscales-1
 		sz = HMAXparams.filter_sz(scal);
@@ -29,7 +31,7 @@ function [dicts] = getHLfilters(imgs, nHL, display)
 
 	gaborFilters = getGaborFilters(HMAXparams, display); % build Gabor filters
 
-	for imgcpt=1:nimg
+    for imgcpt=1:nimg
 		img = imgs{imgcpt};
 		if size(img,3)==3
 			img = double(rgb2gray(img))/255; % convert it to grayscale
@@ -41,6 +43,7 @@ function [dicts] = getHLfilters(imgs, nHL, display)
 		S1 = getS1(img, gaborFilters, HMAXparams, display);
 
 		C1tmp = getC1(S1, dx, dy, HMAXparams, display);
+        C1 = cell(HMAXparams.nscales-1);
         for scal=1:HMAXparams.nscales-1
             C1{scal}(:,:,(imgcpt-1)*(HMAXparams.nth)+1:(imgcpt)*(HMAXparams.nth)) = C1tmp{scal}(:,:,1:HMAXparams.nth);
         end
@@ -68,6 +71,6 @@ function [dicts] = getHLfilters(imgs, nHL, display)
         %winsize=8;
         %X = getdata_imagearray_all(C1{scal}, HMAXparams.filter_sz(scal)); %TODO or winsize ???
         X = getdata_imagearray(C1{scal}, HMAXparams.filter_sz(scal), 4096);
-        [dicts{scal} S{scal} stat{scal}] = sparse_coding(X, num_bases, beta, sparsity_func, epsilon, num_iters, batch_size, fname_save, pars, Binit);
+        [dicts{scal},S{scal},stat{scal}] = sparse_coding(X, num_bases, beta, sparsity_func, epsilon, num_iters, batch_size, fname_save, pars, Binit);
     end
 end
