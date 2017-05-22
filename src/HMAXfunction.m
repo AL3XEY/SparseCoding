@@ -44,7 +44,7 @@ function [C2] = HMAXfunction(HLfilters, imgs, display)
         %%%%%%%%%%%%
         %%%%% C2 layer - max response from the S2 layer %%%%%
         C2tmp = getC2(S2, nHL, HMAXparams);
-        C2(nimg,:) = C2tmp';
+        C2(imgcpt,:) = C2tmp';
     end
 end
 
