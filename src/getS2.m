@@ -31,7 +31,7 @@ function [ S2 ] = getS2( C1, HLfilters, HMAXparams, display )
     end
     %Display the S2 layer
     if display
-        for scal=1:HMAXparams.nscales-2
+        for scal=1:HMAXparams.nscales-1
             for cpt=1:nHL
                 figure
                 imgS2 = S2{scal}(:,:,cpt);
