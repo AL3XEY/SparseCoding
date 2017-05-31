@@ -22,9 +22,10 @@ function [ S2 ] = getS2( C1, HLfilters, HMAXparams, display )
 					R = R.^2;
 					R = sum(sum(sum(R)));
 					R = sqrt(R);
-					R = R/(2*sigma2*alpha);
+					R = - R/(2*sigma2*alpha);
+                    R = exp(R);
 					S2{scal}(x,y,cpt) = R;
-					%S2{scal}(x,y,cpt) = sqrt(sum(sum(sum((HLfilters{scal}(:,:,:,cpt) - C1{scal}(x:x+sz-1,y:y+sz-1,:)).^2))))/(2*sigma2*alpha);
+					%S2{scal}(x,y,cpt) = exp(-sqrt(sum(sum(sum((HLfilters{scal}(:,:,:,cpt) - C1{scal}(x:x+sz-1,y:y+sz-1,:)).^2))))/(2*sigma2*alpha));
                 end
             end
         end
