@@ -113,7 +113,7 @@ if display
                 figure
                 colormap gray
                 imagesc(-ochans{scal}(:,:,th,chan))
-                
+
                 %figure
                 %imagesc(ochans{scal}(:,:,th,1))
 
@@ -166,7 +166,7 @@ end
 
 %DO cells
 
-%TODO gabor filters on each channel
+%gabor filters on each channel
 
 for scal = 1:nscales
     for th = 1:nth
@@ -180,25 +180,17 @@ end
 display = false;
 if display
 	for scal=1:1%nscales
-		for th=1:1%nth
+		%for th=1:1%nth
 			for chan=1:8
 				figure
                 colormap gray
 				imagesc(dochans{scal}(:,:,th,chan))
-
-				%figure
-				%colormap gray
-				%imagesc(dochans{scal}(:,:,th,1))
-				%figure
-				%colormap gray
-				%imagesc(dochans{scal}(:,:,th,5))
 			end
-		end
+		%end
 	end
 end
 
-%TODO half-squaring
-
+%half-squaring
 for scal=1:nscales
 	idx = find(dochans{scal}<0);
 	dochans{scal}(idx) = 0;
@@ -218,10 +210,14 @@ if display
 	end
 end
 
-%TODO normalization
+%normalization
 donormchans=cell(1,nscales);
+dosumchans=cell(1,nscales);
 for scal=1:nscales
 	donormchans{scal}=zeros(h,w,nth,8);
+end
+for scal=1:nscales
+	dosumchans{scal}=zeros(h,w,nth,4);
 end
 k=1;
 sigma=0.225;
@@ -229,7 +225,7 @@ sigma2=sigma^2;
 sm = sum(dochans{scal},3);
 for scal=1:nscales
 	for th=1:nth
-		donormchans{scal}(:,:,th,:) = sqrt((k*ochans{scal}(:,:,th,:))./(sigma2+sm));
+		donormchans{scal}(:,:,th,:) = sqrt((k*dochans{scal}(:,:,th,:))./(sigma2+sm));
 	end
 end
 
@@ -245,7 +241,7 @@ if display
 		end
 	end
 end
-display = true;
+display = false;
 if display
 	for scal=1:1%nscales
 		for th=1:1%nth
@@ -254,6 +250,34 @@ if display
                 colormap gray
 				imagesc(-(donormchans{scal}(:,:,th,chan) + donormchans{scal}(:,:,th,chan+4)))
 			end
+		end
+	end
+end
+
+%max pooling
+pooled = cell(1,nscales);
+for scal=1:nscales
+	pooled{scal} = zeros(h,w,chan);
+	pooled{scal} = max(donormchans{scal}, [], 3);
+end
+
+display=true;
+if display
+	for scal=1:1%nscales
+		for chan=1:nchans
+			figure
+            colormap gray
+			imagesc(-pooled{scal}(:,:,chan))
+		end
+	end
+end
+display=true;
+if display
+	for scal=1:1%nscales
+		for chan=1:4
+			figure
+            colormap gray
+			imagesc(-(pooled{scal}(:,:,chan) + pooled{scal}(:,:,chan+4)))
 		end
 	end
 end
