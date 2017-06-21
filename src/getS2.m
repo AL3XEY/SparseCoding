@@ -2,7 +2,7 @@ function [ S2 ] = getS2( C1, HLfilters, HMAXparams, display )
     if nargin<4 || isempty(display)
         display = false;
     end
-    
+
     S2 = cell(1,HMAXparams.nscales-1);
     for scal=1:HMAXparams.nscales-1
 		%nHL is the number of prototypes
@@ -14,8 +14,8 @@ function [ S2 ] = getS2( C1, HLfilters, HMAXparams, display )
 			sigma2 = 1;
 			alpha = (sz/4)^2;
             [dx2,dy2,~]=size(C1{scal});
-            for x=1:dx2-sz
-                for y=1:dy2-sz
+            for y=1:dy2-sz
+                for x=1:dx2-sz
 					X = HLfilters{scal}(:,:,:,cpt);
 					P = C1{scal}(x:x+sz-1,y:y+sz-1,:);
 					R = X - P;
@@ -42,4 +42,3 @@ function [ S2 ] = getS2( C1, HLfilters, HMAXparams, display )
         end
     end
 end
-
