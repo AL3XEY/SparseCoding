@@ -19,7 +19,7 @@ function [ C1 ] = getC1( S1, dx, dy, HMAXparams, display )
 		% display filtered and pooled images
         if display
 			figure
-            for i = 1:nth
+            for i = 1:HMAXparams.nth
 			  imaf = C1{scal}(:,:,i);
 			  vis = max(imaf(:));
 			  subplot(3,4,i)
