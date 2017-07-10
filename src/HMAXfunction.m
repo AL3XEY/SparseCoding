@@ -5,6 +5,9 @@ function [C2] = HMAXfunction(HLfilters, imgs, display)
     if nargin<3 || isempty(display)
         display = false;
     end
+    if display
+        shapeInserter = vision.ShapeInserter; %to draw rectangles around high-contribution areas on image
+    end
     
     [HMAXparams] = HMAXparameters();
         
@@ -16,11 +19,11 @@ function [C2] = HMAXfunction(HLfilters, imgs, display)
     for imgcpt=1:nimg
         img = imgs{imgcpt};
         if size(img,3)==3
-            img = double(rgb2gray(img))/255; % convert it to grayscale
+            img = double(rgb2gray(img));%/255; % convert it to grayscale
         end
         [dx,dy] = size(img);
-        figure
-        imshow(uint8(255*img)) % show original image
+        %figure
+        %imshow(uint8(255*img)) % show original image
 
         %%%%%%%%%%%%
         %%%  S1  %%%
@@ -43,8 +46,30 @@ function [C2] = HMAXfunction(HLfilters, imgs, display)
         %%%  C2  %%%
         %%%%%%%%%%%%
         %%%%% C2 layer - max response from the S2 layer %%%%%
-        C2tmp = getC2(S2, nHL, HMAXparams);
-        C2(imgcpt,:) = C2tmp';
+        [C2tmp,coords] = getC2(S2, nHL, HMAXparams);
+        C2(imgcpt,:) = C2tmp;
+        
+        if display
+            %Contribution mapping
+            %For each C2 value (high response to filters in S2), we highlight the region of the original image that later gave this result.
+            for hl=1:nHL
+                h = size(img,1);
+                truc =coords(hl,:);
+                maxX = truc(1);
+                maxY = truc(2);
+                scal = truc(3);
+                h2 = size(S2{scal},1);
+                ratio = h/h2;
+                XStart = (maxX-1)*ratio;
+                XEnd = (maxX+1)*ratio;
+                YStart = (maxY-1)*ratio;
+                YEnd = (maxY+1)*ratio;
+                PTS = [[XStart YStart] [XEnd YEnd]]; %TODO test if it's the right order to write PTS
+                J = step(shapeInserter,img,PTS);
+                figure;
+                imshow(J);
+            end
+        end
     end
 end
 

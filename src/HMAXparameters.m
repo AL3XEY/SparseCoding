@@ -1,7 +1,8 @@
 function [HMAXparams] = HMAXparameters()
 	HMAXparams.gam = 0.3;
-	HMAXparams.nth = 12;
-    
+	%HMAXparams.nth = 12;
+	HMAXparams.nth = 4;
+
 	%HMAXparams.nscales = 8; % = size(...)
 	%HMAXparams.sigma = [2.8,4.5,6.7,8.2,10.2,12.3,14.6,17.0];
 	%HMAXparams.lambda = [3.5,5.6,7.9,10.3,12.7,15.5,18.2,21.2];

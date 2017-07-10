@@ -10,7 +10,7 @@ function [ S2 ] = getS2( C1, HLfilters, HMAXparams, display )
         sz = HMAXparams.filter_sz(scal);
         for cpt=1:nHL
 			%calculate the response of each prototype over each patch of the C1 layer (see Mutch & Lowe 2008)
-			% R = ||X - P||^2 / 2*sigma^2*alpha
+			% R = exp(||X - P||^2 / 2*sigma^2*alpha)
 			sigma2 = 1;
 			alpha = (sz/4)^2;
             [dx2,dy2,~]=size(C1{scal});
