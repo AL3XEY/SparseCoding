@@ -20,7 +20,7 @@ function [gaborFilters] = getGaborFilters(HMAXparams, display)
 		if(is_octave)
 			filt = filt ./ sqrt(sum(sumsq(filt))); % normalization (L2 norm)
         else
-            if license('test','Optimization_toolbox')
+            if license('test','neural_network_toolbox')
                 filt = filt ./ sqrt(sum(sumsqr(filt))); % normalization (L2 norm)
             else
                 filt = filt ./ sqrt(sum(sum(filt.^2)));
