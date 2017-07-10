@@ -19,8 +19,12 @@ function [gaborFilters] = getGaborFilters(HMAXparams, display)
 		%filt = filt - mean(mean(filt)); % centering %Octave only
 		if(is_octave)
 			filt = filt ./ sqrt(sum(sumsq(filt))); % normalization (L2 norm)
-		else
-			filt = filt ./ sqrt(sum(sumsqr(filt))); % normalization (L2 norm)
+        else
+            if license('test','Optimization_toolbox')
+                filt = filt ./ sqrt(sum(sumsqr(filt))); % normalization (L2 norm)
+            else
+                filt = filt ./ sqrt(sum(sum(filt.^2)));
+            end
 		end
 
 		% display the filters
