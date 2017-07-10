@@ -19,7 +19,7 @@ function [C2] = HMAXfunctionSparse(dicts, imgs, display)
     for imgcpt=1:nimg
         img = imgs{1};
         if size(img,3)==3
-            img = double(rgb2gray(img))/255; % convert it to grayscale
+            img = double(rgb2gray(img));%/255; % convert it to grayscale
         end
         [dx,dy] = size(img);
         figure
