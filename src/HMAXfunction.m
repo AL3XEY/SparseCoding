@@ -22,9 +22,10 @@ function [C2] = HMAXfunction(HLfilters, imgs, display)
             img = double(rgb2gray(img));%/255; % convert it to grayscale
         end
         [dx,dy] = size(img);
-        %figure
-        %imshow(uint8(255*img)) % show original image
-
+        if display
+            figure
+            imshow(uint8(255*img)) % show original image
+        end
         %%%%%%%%%%%%
         %%%  S1  %%%
         %%%%%%%%%%%%

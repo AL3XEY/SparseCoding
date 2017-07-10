@@ -28,12 +28,14 @@ function [HLfilters] = getHLfilters(imgs, nHL, display)
 	for imgcpt=1:nimg
 		img = imgs{imgcpt};
 		if size(img,3)==3
-			img = double(rgb2gray(img))/255; % convert it to grayscale
+			img = double(rgb2gray(img));%/255; % convert it to grayscale
 		end
 		[dx,dy] = size(img);
-		figure
-		imshow(uint8(255*img)) % show original image
-
+        if display
+            figure
+            imshow(uint8(255*img)) % show original image
+        end
+        
 		S1 = getS1(img, gaborFilters, HMAXparams, display);
 
 		C1 = getC1(S1, dx, dy, HMAXparams, display);
