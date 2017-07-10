@@ -32,7 +32,7 @@ function [dicts] = getHLfilters(imgs, nHL, display)
 	for imgcpt=1:nimg
 		img = imgs{imgcpt};
 		if size(img,3)==3
-			img = double(rgb2gray(img))/255; % convert it to grayscale
+			img = double(rgb2gray(img));%/255; % convert it to grayscale
 		end
 		[dx,dy] = size(img);
 		figure
