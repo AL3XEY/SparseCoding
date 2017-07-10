@@ -261,7 +261,7 @@ for scal=1:nscales
 	pooled{scal} = max(donormchans{scal}, [], 3);
 end
 
-display=true;
+display=false;
 if display
 	for scal=1:1%nscales
 		for chan=1:nchans
@@ -277,7 +277,8 @@ if display
 		for chan=1:4
 			figure
             colormap gray
-			imagesc(-(pooled{scal}(:,:,chan) + pooled{scal}(:,:,chan+4)))
+			DOcells{scal}(:,:,chan) = pooled{scal}(:,:,chan) + pooled{scal}(:,:,chan+4);
+			imagesc(-DOcells{scal}(:,:,chan))
 		end
 	end
 end
