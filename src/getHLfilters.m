@@ -39,18 +39,27 @@ function [HLfilters] = getHLfilters(imgs, nHL, display)
 		S1 = getS1(img, gaborFilters, HMAXparams, display);
 
 		C1 = getC1(S1, dx, dy, HMAXparams, display);
-
-		for scal=1:HMAXparams.nscales-1
-			%Take random patches from C1
+		
+        %Take random patches from C1
+        rdx = 1+floor(rand(nHL,1).*(dx)); %TODO unique ?
+        rdy = 1+floor(rand(nHL,1).*(dy));
+        for scal=1:HMAXparams.nscales-1
 			sz = HMAXparams.filter_sz(scal);
-			%pxm = floor(dx/sz); pym = floor(dy/sz);
 			[dx2,dy2,~]=size(C1{scal});
-			rdx = 1+floor(rand(nHL,1).*(dx2-sz)); %TODO unique ?
-			rdy = 1+floor(rand(nHL,1).*(dy2-sz)); %FIXME caution! if input image is too short, pym-sz or pxm-sz can be too small
+            maxX = dx2-sz; %TODO if maxX<0, stop
+            maxY = dy2-sz; %TODO if maxY<0, stop
+            ratio = dx2/dx;
 			for cpt=1:nHL
-				HLfilters{scal}(1:sz,1:sz,:,(imgcpt-1)*nHL+cpt) = C1{scal}(rdx(cpt):rdx(cpt)+sz-1,rdy(cpt):rdy(cpt)+sz-1,:);
+                x = round(rdx(cpt)*ratio); %TODO calculate it as vector, before this loop ?
+                y = round(rdy(cpt)*ratio);
+                if x>maxX
+                    x = maxX;
+                end
+                if y>maxY
+                    y = maxY;
+                end
+				HLfilters{scal}(1:sz,1:sz,:,(imgcpt-1)*nHL+cpt) = C1{scal}(x:x+sz-1,y:y+sz-1,:);
 			end
 		end
-		%clear S1,C1; %TODO necessary?
 	end
 end
