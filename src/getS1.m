@@ -7,7 +7,7 @@ function [ S1 ] = getS1( img, gaborFilters, HMAXparams, display )
 	for scal = 1:HMAXparams.nscales
         for i = 1:HMAXparams.nth
 		  filtr = gaborFilters{scal}(:,:,i);
-		  S1{scal}(:,:,i) = abs(filter2(filtr,img)); % filtered images
+		  S1{scal}(:,:,i) = abs(filter2(filtr,img)); % filtered images %TODO why abs?
         end
 
 		% display filtered images

@@ -5,10 +5,14 @@
 *.jpg
 *.pgm
 *.ppm
+*.gif
+*.bmp
+res/yalefaces/
 
 # Matlab
 
 *.asv
+*.mat
 
 # Misc
 
@@ -19,3 +23,4 @@
 *.tar.gz
 *.tgz
 *.eye
+*.txt
