@@ -1,5 +1,6 @@
-function [imgout] = laplacianPyramidReconstruction(Lplac, Nlev)
+function [imgout] = laplacianPyramidReconstruction(Lplac)
 
+Nlev = size(Lplac,1)-1;
 hgf = [1,4,6,4,1]/16; % demi filtre binomial à 5 points
 [gfx,gfy] = meshgrid(hgf,hgf);
 Gausfilt = gfx.*gfy; % filtre binomial
@@ -20,5 +21,5 @@ imgout = bld{1};
 %check = max(abs(bld{1}-ima)(:));
 %prec = 1E-10;
 %if(check>prec)
-%	disp('l image reconstruite est différente de l image initiale !!!')
+%	disp('l image reconstruite est differente de l image initiale !!!')
 %end
