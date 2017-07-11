@@ -4,10 +4,10 @@ function [gaborFilters] = getGaborFilters(HMAXparams, display)
     end
     
 	gaborFilters = cell(1,HMAXparams.nscales);
-	th = [0:HMAXparams.nth-1]*pi/HMAXparams.nth; % The orientations % TODO use parenthesis instead of brackets (does this work on Octave?)
+	th = (0:HMAXparams.nth-1)*pi/HMAXparams.nth; % the orientations
 	for scal = 1:HMAXparams.nscales
 		nxy = HMAXparams.filter_sz(scal); % size of the filter
-		xx = [-(nxy-1)/2:(nxy-1)/2];% TODO use parenthesis instead of brackets (does this work on Octave?)
+		xx = (-(nxy-1)/2:(nxy-1)/2);
 		yy = xx;
 		[x,y] = meshgrid(xx,yy);
 
@@ -17,11 +17,13 @@ function [gaborFilters] = getGaborFilters(HMAXparams, display)
 			filt(:,:,i) = filt(:,:,i) - mn(i); %centering
 		end
 		%filt = filt - mean(mean(filt)); % centering %Octave only
+        
+        % normalization (L2 norm)
 		if(is_octave)
-			filt = filt ./ sqrt(sum(sumsq(filt))); % normalization (L2 norm)
+			filt = filt ./ sqrt(sum(sumsq(filt))); 
         else
             if license('test','neural_network_toolbox')
-                filt = filt ./ sqrt(sum(sumsqr(filt))); % normalization (L2 norm)
+                filt = filt ./ sqrt(sum(sumsqr(filt)));
             else
                 filt = filt ./ sqrt(sum(sum(filt.^2)));
             end
