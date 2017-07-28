@@ -1,7 +1,4 @@
-function [C2] = HMAXfunction(HLfilters, imgs, display)
-	% Build the Gabor filters used by HMAX first layer (S1). For each of the 8 scales
-	% the program can build the nth = 12 (here) filters corresponding to the different orientations.
-    
+function [C2] = HMAXfunction(HLfilters, imgs, display)    
     if nargin<3 || isempty(display)
         display = false;
     end
