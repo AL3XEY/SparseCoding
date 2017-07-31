@@ -1,36 +1,31 @@
 %read files and store them by category
+%TODO probably not working on Octave
 
 close all
 clear
 clc
-%tic
-
-%if is_octave
-%    pkg load image;
-%end
 
 rootFolder = fullfile('./');
 d = dir(rootFolder);
-isub = [d(:).isdir]; %# returns logical vector
+isub = [d(:).isdir];
 nameFolds = {d(isub).name}';
 nameFolds(ismember(nameFolds,{'.','..'})) = [];
 imds = imageDatastore(fullfile(rootFolder, nameFolds), 'LabelSource', 'foldernames');
-%tbl = countEachLabel(imds);
 label=imds.Labels(1);
 labelc=1;
 nimgs = size(imds.Labels,1);
 [a,b]=hist(imds.Labels,unique(imds.Labels));
 cpt=1;
-for i=1:3%1:size(a,2) %TODO 1 2 3 5 7
+for i=1:size(a,2)
     images = cell(1,a(i));
     grayImages = cell(1,a(i));
     labels = ones(1,a(i)).*i;
     labelString=b(i);
     labelString=labelString{1};
-    for j=1:a(i)
+    for j=1:a(i) %caution, categories 5 and 7 contain 800 images, this can be hard (or impossible) to handle for your computer
         tic
-        i
-        j
+        i%display progression
+        j%
         file = imds.Files(cpt);
         img = imread(file{1});
         scaled = double(img)./255;
@@ -59,4 +54,3 @@ for i=1:3%1:size(a,2) %TODO 1 2 3 5 7
     save(sprintf('caltech101CategoryGray-%d-%s.mat',i,labelString),'images','labels','labelString', '-v7.3');  
     toc
 end
-%toc
