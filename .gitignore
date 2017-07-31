@@ -3,6 +3,7 @@
 *.png
 *.tif
 *.jpg
+*.jpeg
 *.pgm
 *.ppm
 *.gif
