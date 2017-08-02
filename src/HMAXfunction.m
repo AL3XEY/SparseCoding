@@ -14,6 +14,7 @@ function [C2] = HMAXfunction(HLfilters, imgs, display)
     nHL = size(HLfilters{1},4);
     C2 = zeros(nimg,nHL);
     for imgcpt=1:nimg
+        imgcpt
         img = imgs{imgcpt};
         if size(img,3)==3
             img = double(rgb2gray(img));%/255; % convert it to grayscale
