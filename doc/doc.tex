@@ -1,0 +1,101 @@
+\documentclass[11pt,english]{article}
+\usepackage[utf8]{inputenc}
+
+\DeclareUnicodeCharacter{00A0}{ }
+
+\usepackage{microtype}
+\usepackage{graphicx} % figures
+\usepackage{fancyhdr} % for headers and footers
+\usepackage{booktabs} % for beautiful tables
+\usepackage{float} % for positioning beautiful tables
+%\usepackage[usenames, dvipsnames]{color} % for color support
+%\usepackage[linesnumbered]{algorithm2e} % for code
+\usepackage{amsmath} % for maths
+\usepackage{amsfonts}
+\usepackage{amssymb} % for checkmarks
+\usepackage{eurosym} % oh, come on, you know what is that for
+\usepackage{url} % for active URL
+\usepackage{tikz} % for figures
+\usepackage{titlesec} %for subsubsubsection
+\usepackage{hyperref} %for links to sections and figures
+\usepackage{csvsimple} %for csv to table
+\usepackage{epstopdf}
+\usepackage{textcomp} %for the degree symbol
+\usepackage{listings} %for code snippets
+\usepackage{afterpage} %for blank pages %?
+
+\epstopdfsetup{update}
+
+\usepackage{geometry} %for margins
+\geometry{
+	a4paper,
+	total={210mm,297mm},
+	left=25mm,
+	right=25mm,
+	top=25mm,
+	bottom=25mm,
+}
+
+%\renewcommand{\baselinestretch}{1.5}
+%\renewcommand{\baselinestretch}{1.3}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.1mm}} % horizontal black line
+\newcommand{\tabitem}{~~\llap{\textbullet}~~} % for putting lists in beautiful tables
+
+\newcommand{\drawfresco}{
+	\draw (0,0.5) -- (9.51,0.5) ;
+	\draw (0,-0.51) -- (9.51,-0.51) ;
+	\draw (10.25,0) -- (9.25,0.75) ;
+	\draw (10.25,0) -- (9.25,-0.75) ;
+}
+
+%%%%% Subsubsubsection %%%%%
+\titleclass{\subsubsubsection}{straight}[\subsection]
+\newcounter{subsubsubsection}[subsubsection]
+\renewcommand\thesubsubsubsection{\thesubsubsection.\arabic{subsubsubsection}}
+\titleformat{\subsubsubsection}
+  {\normalfont\normalsize\bfseries}{\thesubsubsubsection}{1em}{}
+\titlespacing*{\subsubsubsection}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+\makeatletter
+\renewcommand\subparagraph{\@startsection{subparagraph}{6}{\parindent}%
+  {3.25ex \@plus1ex \@minus .2ex}%
+  {-1em}%
+  {\normalfont\normalsize\bfseries}}
+\def\toclevel@subsubsubsection{4}
+\def\l@subsubsubsection{\@dottedtocline{4}{7em}{4em}}
+\makeatother
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{4}
+
+\title{}
+\author{Alexandre Faucher}
+
+\begin{document}
+
+	\pagestyle{empty}
+	\input{title.tex}
+
+	\pagestyle{fancy}
+	\fancyhf{}
+	\lhead{SpColHMAX}
+	\chead{Doc}
+	\rhead{\today}
+	\cfoot{Page \thepage}
+
+%	\newpage\null\thispagestyle{empty}\newpage
+
+	\tableofcontents
+
+	%\input{overview}%technical details + resources (datasets)
+	%\input{sparsecoding}%Sparse Coding
+	%\input{hmax}%HMAX
+	%\input{}%Future additions
+	%\input{glossary.tex}
+	%\input{annexes.tex}
+
+	\newpage
+	\bibliographystyle{unsrt}
+	\bibliography{bibliography}
+
+\end{document}
