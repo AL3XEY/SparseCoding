@@ -16,13 +16,23 @@ res/101_ObjectCategories/BACKGROUND_Google/tmp
 *.asv
 *.mat
 
-# Misc
+# LaTeX / BibTeX
+
+*.aux
+*.out
+*.toc
+*.bbl
+*.blg
+
+# Misc / System-specific
 
 *~
 *.DS_Store
 *.pdf
 *.zip
-*.tar.gz
+*.gz
 *.tgz
 *.eye
 *.txt
+*.log
+*.pptx
