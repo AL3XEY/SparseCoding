@@ -1,4 +1,8 @@
-function [ C2,coords ] = getC2(S2, nHL, HMAXparams)   
+function [ C2,coords ] = getC2(S2, HMAXparams)
+    if nargin<2 || isempty(HMAXparams)
+        HMAXparams = HMAXparameters();
+    end
+    nHL = size(S2{1},3);
     C2tmp = zeros(nHL, 4);
     S2b = zeros(HMAXparams.nscales-1,nHL,3);
     for scal=1:HMAXparams.nscales-1

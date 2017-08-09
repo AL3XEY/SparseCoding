@@ -1,15 +1,21 @@
-function [C2] = HMAXfunctionSparse(dicts, imgs, gamma, display)
-    if nargin<3 || isempty(display)
+function [C2] = HMAXfunctionSparse(dicts, imgs, gamma, HMAXparams, gaborFilters, display)
+    if nargin<4 || isempty(HMAXparams)
+        HMAXparams = HMAXparameters();
+    end
+    if nargin<5 || isempty(gaborFilters)
+        gaborFilters = getGaborFilters(HMAXparams, false);
+    end
+    if nargin<6 || isempty(display)
         display = false;
     end
+    if display
+        shapeInserter = vision.ShapeInserter; %to draw rectangles around high-contribution areas on image
+    end
 
-    [HMAXparams] = HMAXparameters();
+    addpath('./fast-sc-2/code/');
+    addpath('./fast-sc-2/code/sc2/');
+    addpath('./fast-sc-2/code/sc2/nrf/');
 
-    addpath('../fast-sc-2/code/');
-    addpath('../fast-sc-2/code/sc2/');
-    addpath('../fast-sc-2/code/sc2/nrf/');
-
-    gaborFilters = getGaborFilters(HMAXparams, display); % build Gabor filters
     if iscell(dicts)
         ndicts = size(dicts,2);
         nHL = size(dicts{1},2);

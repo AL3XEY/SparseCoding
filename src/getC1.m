@@ -1,4 +1,7 @@
 function [ C1 ] = getC1( S1, dx, dy, HMAXparams, display )
+    if nargin<4 || isempty(HMAXparams)
+        HMAXparams = HMAXparameters();
+    end
     if nargin<5 || isempty(display)
         display = false;
     end

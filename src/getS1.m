@@ -1,4 +1,10 @@
-function [ S1 ] = getS1( img, gaborFilters, HMAXparams, display )
+function [ S1 ] = getS1( img, HMAXparams, gaborFilters, display )
+    if nargin<2 || isempty(HMAXparams)
+        HMAXparams = HMAXparameters();
+    end
+    if nargin<3 || isempty(gaborFilters)
+        gaborFilters = getGaborFilters(HMAXparams, false);
+    end
     if nargin<4 || isempty(display)
         display = false;
     end

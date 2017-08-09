@@ -1,10 +1,15 @@
-function [dicts] = getHLfiltersSparse(imgs, nHL, beta, iterations, oneDictPerScale, display)
+function [dicts] = getHLfiltersSparse(imgs, nHL, beta, iterations, oneDictPerScale, HMAXparams, gaborFilters, display)
     if nargin<2 || isempty(nHL)
-        nHL = 10;
-        %nHL = 1000; %the size of the dictionnary (number of atoms, or
+        nHL = 1000; %the size of the dictionnary (number of atoms, or
         %prototypes)
     end
-    if nargin<3 || isempty(display)
+    if nargin<5 || isempty(HMAXparams)
+        HMAXparams = HMAXparameters();
+    end
+    if nargin<6 || isempty(gaborFilters)
+        gaborFilters = getGaborFilters(HMAXparams, false);
+    end
+    if nargin<7 || isempty(display)
         display = false;
     end
 
@@ -23,9 +28,7 @@ function [dicts] = getHLfiltersSparse(imgs, nHL, beta, iterations, oneDictPerSca
     S =dicts;
     stat = dicts;
     C1 = cell(nimg*(HMAXparams.nscales-1));
-
-	gaborFilters = getGaborFilters(HMAXparams, display); % build Gabor filters
-
+    
     for imgcpt=1:nimg
 		img = imgs{imgcpt};
         if size(img,3)==3

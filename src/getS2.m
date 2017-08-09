@@ -1,4 +1,7 @@
 function [ S2 ] = getS2( C1, HLfilters, HMAXparams, display )
+    if nargin<3 || isempty(HMAXparams)
+        HMAXparams = HMAXparameters();
+    end
     if nargin<4 || isempty(display)
         display = false;
     end

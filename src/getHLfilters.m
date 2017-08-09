@@ -1,8 +1,14 @@
-function [HLfilters] = getHLfilters(imgs, nHL, display)
+function [HLfilters] = getHLfilters(imgs, nHL, HMAXparams, gaborFilters, display)
     if nargin<2 || isempty(nHL)
         nHL = 1000; %the number of prototypes to take (total) across all images
     end
-    if nargin<3 || isempty(display)
+    if nargin<3 || isempty(HMAXparams)
+        HMAXparams = HMAXparameters();
+    end
+    if nargin<4 || isempty(gaborFilters)
+        gaborFilters = getGaborFilters(HMAXparams, false);
+    end
+    if nargin<5 || isempty(display)
         display = false;
     end
 
@@ -16,7 +22,7 @@ function [HLfilters] = getHLfilters(imgs, nHL, display)
     %them when multiple times instead)
     %+ the random selection might have non-unique values (it's a very small
     %risk, but still, we generate new x and y every new image)
-    %tl;dr : this solution is fast but costs a lot of memory
+    %tl;dr : this solution is fast but needs a lot of memory
     nimg = size(imgs,2);
     images = cell(1,nHL);
     if nHL < nimg
@@ -48,9 +54,7 @@ function [HLfilters] = getHLfilters(imgs, nHL, display)
 	for scal=1:HMAXparams.nscales-1
 		sz = HMAXparams.filter_sz(scal);
 		HLfilters{scal} = zeros(sz, sz, HMAXparams.nth, nimg);
-	end
-
-	gaborFilters = getGaborFilters(HMAXparams, display); % build Gabor filters
+    end
     
 	for imgcpt=1:nimg
 		img = imgs{imgcpt};

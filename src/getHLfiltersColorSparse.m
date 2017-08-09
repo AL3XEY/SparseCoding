@@ -1,22 +1,25 @@
-function [dicts] = getHLfiltersColorSparse(imgs, nHL, beta, iterations, oneDictPerScale, display)
+function [dicts] = getHLfiltersColorSparse(imgs, nHL, beta, iterations, oneDictPerScale, HMAXparams, gaborFilters, display)
     if nargin<2 || isempty(nHL)
-        nHL = 10;
-        %nHL = 1000; %the size of the dictionnary (number of atoms, or
+        nHL = 1000; %the size of the dictionnary (number of atoms, or
         %prototypes)
     end
-    if nargin<3 || isempty(display)
+    if nargin<6 || isempty(HMAXparams)
+        HMAXparams = HMAXparameters();
+    end
+    if nargin<7 || isempty(gaborFilters)
+        gaborFilters = getGaborFilters(HMAXparams, false);
+    end
+    if nargin<8 || isempty(display)
         display = false;
     end
 
     if is_octave
 		    pkg load image;
     end
-
-	HMAXparams = HMAXparameters();
-
-    addpath('../fast-sc-2/code/');
-    addpath('../fast-sc-2/code/sc2/');
-    addpath('../fast-sc-2/code/sc2/nrf/');
+    
+    addpath('./fast-sc-2/code/');
+    addpath('./fast-sc-2/code/sc2/');
+    addpath('./fast-sc-2/code/sc2/nrf/');
 
     nimg = size(imgs,2);
     dicts = cell(HMAXparams.nscales-1,1);
@@ -25,8 +28,6 @@ function [dicts] = getHLfiltersColorSparse(imgs, nHL, beta, iterations, oneDictP
     nchans = 8; %FIXME
     C1 = cell(nimg*(HMAXparams.nscales-1)*nchans);
     nimg*(HMAXparams.nscales-1)*nchans
-
-    %gaborFilters = getGaborFilters(HMAXparams, display); % build Gabor filters
 
     for imgcpt=1:nimg
 		img = imgs{imgcpt};
@@ -39,8 +40,8 @@ function [dicts] = getHLfiltersColorSparse(imgs, nHL, beta, iterations, oneDictP
 		imshow(uint8(255*img)) % show original image
 
         %OpponencyCells
-        SO = getSODescriptor(img, HMAXparams, display);
-        DO = getDODescriptor(SO, HMAXparams, display);
+        SO = getSODescriptor(img, HMAXparams, gaborFilters, display);
+        DO = getDODescriptor(SO, HMAXparams, gaborFilters, display);
         %TODO do we sum the complementary channels ?
         nchans = size(DO{1},4);
         for chan=1:nchans

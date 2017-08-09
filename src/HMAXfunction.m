@@ -1,15 +1,17 @@
-function [C2] = HMAXfunction(HLfilters, imgs, display)    
-    if nargin<3 || isempty(display)
+function [C2] = HMAXfunction(HLfilters, imgs, HMAXparams, gaborFilters, display)
+    if nargin<3 || isempty(HMAXparams)
+        HMAXparams = HMAXparameters();
+    end
+    if nargin<4 || isempty(gaborFilters)
+        gaborFilters = getGaborFilters(HMAXparams, false);
+    end
+    if nargin<5 || isempty(display)
         display = false;
     end
     if display
         shapeInserter = vision.ShapeInserter; %to draw rectangles around high-contribution areas on image
     end
-    
-    [HMAXparams] = HMAXparameters();
         
-    gaborFilters = getGaborFilters(HMAXparams, display); % build Gabor filters
-    
     nimg = size(imgs,2);
     nHL = size(HLfilters{1},4);
     C2 = zeros(nimg,nHL);
@@ -45,7 +47,7 @@ function [C2] = HMAXfunction(HLfilters, imgs, display)
         %%%  C2  %%%
         %%%%%%%%%%%%
         %%%%% C2 layer - max response from the S2 layer %%%%%
-        [C2tmp,coords] = getC2(S2, nHL, HMAXparams);
+        [C2tmp,coords] = getC2(S2, HMAXparams);
         C2(imgcpt,:) = C2tmp;
         
         if display

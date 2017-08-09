@@ -1,8 +1,15 @@
-function [DO] = getDODescriptor(SO, HMAXparams, display)
-
+function [DO] = getDODescriptor(SO, HMAXparams, gaborFilters, display)
+    if nargin<2 || isempty(HMAXparams)
+        HMAXparams = HMAXparameters();
+    end
+    if nargin<3 || isempty(gaborFilters)
+        gaborFilters = getGaborFilters(HMAXparams, false);
+    end
+    if nargin<4 || isempty(display)
+        display = false;
+    end
 	%nth=HMAXparams.nth;
 	nscales = HMAXparams.nscales;
-	gaborFilters = getGaborFilters(HMAXparams, false);
 	[h,w,nth,nchans] = size(SO{1});
 
 	%gabor filters on each channel
