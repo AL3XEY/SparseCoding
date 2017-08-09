@@ -1,44 +1,39 @@
-function [SO] = getSODescriptor(img, HMAXparams, display) %TODO ability to pass weight matrix as input
+function [SO, ochans] = getSODescriptor(img, HMAXparams, gaborFilters, display) %img must be normalized between 0 and 255
+    if nargin<2 || isempty(HMAXparams)
+        HMAXparams = HMAXparameters();
+    end
+    if nargin<3 || isempty(gaborFilters)
+        gaborFilters = getGaborFilters(HMAXparams, false);
+    end
+    if nargin<4 || isempty(display)
+        display = false;
+    end
 
-	W=ones(3,4);
-	W(2,1)=-1;
-	W(3,1)=0;
-	W(1,2)=2;
-	W(2,2)=-1;
-	W(3,2)=-1;
-	W(3,3)=-2;
-	W(:,1)=W(:,1)/sqrt(2);
-	W(:,2)=W(:,2)/sqrt(6);
-	W(:,3)=W(:,3)/sqrt(6);
-	W(:,4)=W(:,4)/sqrt(3);
-	WR = W(1,:);
-	WG = W(2,:);
-	WB = W(3,:);
+    W = HMAXparams.W;
+    Wexcit = (W>0).*W;
+    Winhib = (W<0).*W;
 
-	nchans = 8;
+	nchans = 2*HMAXparams.outChansHalf;
 	img = double(img)./255;
 	%imglms = rgb2lms(img);
 	%img = imglms;
 	[h,w,c] = size(img);
 
-	%build gabor filters
 	nth=HMAXparams.nth;
 	nscales = HMAXparams.nscales;
-	gaborFilters = getGaborFilters(HMAXparams, false);
 	ochans=cell(1,nscales);
 	dochans=cell(1,nscales);
 	excit=cell(1,nscales);
 	inhib=cell(1,nscales);
 	for scal=1:nscales
-		ochans{scal} = zeros(h,w,nth,8);
-	    dochans{scal} = zeros(h,w,nth,8);
-		excit{scal} = zeros(h,w,nth,3);
-		inhib{scal} = zeros(h,w,nth,3);
+		ochans{scal} = zeros(h,w,nth,nchans);
+	    dochans{scal} = zeros(h,w,nth,nchans);
+		excit{scal} = zeros(h,w,nth,HMAXparams.inChans);
+		inhib{scal} = zeros(h,w,nth,HMAXparams.inChans);
 	end
 
 	for scal = 1:nscales
 	    for th = 1:nth
-	        filtr = gaborFilters{scal}(:,:,th);
 	        filterexcit = (gaborFilters{scal}(:,:,th)>0).*gaborFilters{scal}(:,:,th);
 	        filterinhib = -(gaborFilters{scal}(:,:,th)<0).*gaborFilters{scal}(:,:,th);
 	        for color=1:3
@@ -50,16 +45,14 @@ function [SO] = getSODescriptor(img, HMAXparams, display) %TODO ability to pass 
 
 	for scal=1:nscales
 		for th=1:nth
-			ochans{scal}(:,:,th,1) = WR(1).*excit{scal}(:,:,th,1) + WG(1).*inhib{scal}(:,:,th,2);% + WB(1).*img(:,:,3);
-			ochans{scal}(:,:,th,2) = WR(2).*excit{scal}(:,:,th,1) + WG(2).*inhib{scal}(:,:,th,2) + WB(2).*inhib{scal}(:,:,th,3);
-			ochans{scal}(:,:,th,3) = WR(3).*excit{scal}(:,:,th,1) + WG(3).*excit{scal}(:,:,th,2) + WB(3).*inhib{scal}(:,:,th,3);
-			ochans{scal}(:,:,th,4) = WR(4).*excit{scal}(:,:,th,1) + WG(4).*excit{scal}(:,:,th,2) + WB(4).*excit{scal}(:,:,th,3);
-			%ochans{scal}(:,:,th,5:8) = -ochans{scal}(:,:,th,1:4);
-			ochans{scal}(:,:,th,5) = -(WR(1).*inhib{scal}(:,:,th,1) + WG(1).*excit{scal}(:,:,th,2));% + WB(1).*img(:,:,3);
-			ochans{scal}(:,:,th,6) = -(WR(2).*inhib{scal}(:,:,th,1) + WG(2).*excit{scal}(:,:,th,2) + WB(2).*excit{scal}(:,:,th,3));
-			ochans{scal}(:,:,th,7) = -(WR(3).*inhib{scal}(:,:,th,1) + WG(3).*inhib{scal}(:,:,th,2) + WB(3).*excit{scal}(:,:,th,3));
-			ochans{scal}(:,:,th,8) = -(WR(4).*inhib{scal}(:,:,th,1) + WG(4).*inhib{scal}(:,:,th,2) + WB(4).*inhib{scal}(:,:,th,3));
-			if display %TODO
+            for i=1:HMAXparams.outChansHalf
+                for j=1:HMAXparams.inChans
+                    ochans{scal}(:,:,th,i) = ochans{scal}(:,:,th,i) + Wexcit(j,i).*excit{scal}(:,:,th,j) + Winhib(j,i).*inhib{scal}(:,:,th,j);
+                    ochans{scal}(:,:,th,i+HMAXparams.outChansHalf) = -(ochans{scal}(:,:,th,i) + Wexcit(j,i).*excit{scal}(:,:,th,j) + Winhib(j,i).*inhib{scal}(:,:,th,j));%-ochans{scal}(:,:,th,i);
+                end
+            end
+            
+            if display %TODO
 				figure
 				colormap gray
 				imagesc(ochans{scal}(:,:,th,2))
@@ -67,7 +60,7 @@ function [SO] = getSODescriptor(img, HMAXparams, display) %TODO ability to pass 
 				figure
 				colormap gray
 				imagesc(ochans{scal}(:,:,th,6))
-			end
+            end
 		end
 	end
 
@@ -100,15 +93,15 @@ function [SO] = getSODescriptor(img, HMAXparams, display) %TODO ability to pass 
 	k=1;
 	sigma=0.225;
 	sigma2=sigma^2;
-	%TODO see which loop order is the best
 	sm = sum(ochans{scal},4);
-	for scal=1:nscales
+    for scal=1:nscales
 		for chan=1:8
 			SO{scal}(:,:,:,chan) = sqrt((k*ochans{scal}(:,:,:,chan))./(sigma2+sm));
 		end
-	end
+    end
 
 	if display
+        %TODO show every orientation on the same figure and label it
 		for scal=1:1%nscales
 			for th=1:1%nth
 				for chan=1:8
