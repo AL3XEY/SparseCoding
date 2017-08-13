@@ -44,8 +44,8 @@ end
 
 [szH,szW] = size(B);
 winsize = sqrt(szH/c);
-foo = h - winsize + 1;
-bar = w - winsize + 1;
+hCropped = h - winsize + 1;
+wCropped = w - winsize + 1;
 X = getdata_imagearray_all(I, winsize); %get all the patches in the image as vectors
 [Xh,Xw] = size(X);
 if (nargin<3) || isempty(gamma)
@@ -66,8 +66,8 @@ meanCoef = zeros(h,w,c);
 % get output image by reshaping the vectors into matrices + get mean value for each pixel
 cpt = 1;
 if c==3
-	for i=1:foo %TODO rename!
-		for j=1:bar %TODO rename!
+	for i=1:hCropped
+		for j=1:wCropped
 			Iout(i:i+winsize-1, j:j+winsize-1,1) = Iout(i:i+winsize-1, j:j+winsize-1,1) + reshape(Xout(1:XoutH/3,cpt),winsize,winsize);
 	        %Xb(:, cpt) = reshape(I(i:i+winsize-1, j:j+winsize-1),winsize^2,1);
 	        Iout(i:i+winsize-1, j:j+winsize-1,2) = Iout(i:i+winsize-1, j:j+winsize-1,2) + reshape(Xout((XoutH/3)+1:(2*XoutH/3),cpt),winsize,winsize);
@@ -78,8 +78,8 @@ if c==3
 		end
 	end
 else
-	for i=1:foo %TODO rename!
-		for j=1:bar %TODO rename!
+	for i=1:hCropped
+		for j=1:wCropped
 			Iout(i:i+winsize-1, j:j+winsize-1) = Iout(i:i+winsize-1, j:j+winsize-1) + reshape(Xout(:,cpt),winsize,winsize);
 	        Xb(:, cpt) = reshape(I(i:i+winsize-1, j:j+winsize-1),winsize^2,1);
 			meanCoef(i:i+winsize-1, j:j+winsize-1) = meanCoef(i:i+winsize-1, j:j+winsize-1)+1;
