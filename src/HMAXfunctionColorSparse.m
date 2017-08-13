@@ -25,7 +25,7 @@ function [C2] = HMAXfunctionColorSparse(dicts, imgs, gamma, HMAXparams, gaborFil
     end
     nimg = size(imgs,2);
     C2 = zeros(nimg,nHL);
-    nchans = 8; %FIXME
+    nchans = 2*HMAXparams.outChansHalf;
     for imgcpt=1:nimg
         img = imgs{imgcpt};
         %if size(img,3)==3

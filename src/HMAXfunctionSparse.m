@@ -49,8 +49,8 @@ function [C2] = HMAXfunctionSparse(dicts, imgs, gamma, HMAXparams, gaborFilters,
         %%%  S2  %%%
         %%%%%%%%%%%%
         %%%%% S2 layer - get sparse coefficients matrices %%%%%
-        %gamma=0.01; %TODO
-        %gamma=0.1; %TODO
+        %gamma=0.01;
+        %gamma=0.1;
         %gamma=0.4; %TODO default value
 
         %Sout = cell(HMAXparams.nscales,1);

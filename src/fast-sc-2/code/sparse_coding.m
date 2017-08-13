@@ -81,7 +81,7 @@ addpath sc2
 
 % create result directory
 if exist('../results','dir')~=7
-    mkdir('../results'); %TODO check if it works
+    mkdir('../results');
 end
 
 % initialize basis

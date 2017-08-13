@@ -16,7 +16,7 @@ function [dicts] = getHLfiltersColorSparse(imgs, nHL, beta, iterations, oneDictP
     if is_octave
 		    pkg load image;
     end
-    
+
     addpath('./fast-sc-2/code/');
     addpath('./fast-sc-2/code/sc2/');
     addpath('./fast-sc-2/code/sc2/nrf/');
@@ -25,7 +25,7 @@ function [dicts] = getHLfiltersColorSparse(imgs, nHL, beta, iterations, oneDictP
     dicts = cell(HMAXparams.nscales-1,1);
     S = dicts;
     stat = dicts;
-    nchans = 8; %FIXME
+    nchans = 2*HMAXparams.outChansHalf;
     C1 = cell(nimg*(HMAXparams.nscales-1)*nchans);
     nimg*(HMAXparams.nscales-1)*nchans
 
@@ -34,7 +34,7 @@ function [dicts] = getHLfiltersColorSparse(imgs, nHL, beta, iterations, oneDictP
         %if size(img,3)==3
 		%	img = double(rgb2gray(img));%/255; % convert it to grayscale
         %end %TODO else, normalize between 0 and 1
-        
+
 		[dx,dy,c] = size(img);
 		figure
 		imshow(uint8(255*img)) % show original image

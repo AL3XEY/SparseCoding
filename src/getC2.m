@@ -11,8 +11,8 @@ function [ C2,coords ] = getC2(S2, HMAXparams)
             [value,idx] = max(m(:)); %TODO or min ?
             [maxX,maxY] = ind2sub(size(m),idx);
             %m(I1,I2)
-            %TODO max is always 1, I guess, if one of the HL filters is taken from current image
-            S2b(scal,hl,:) = [value,maxX,maxY]; %FIXME coordinates in S2 depend on scale of current S2!!!
+            %Caution : max is always 1, I guess, if one of the HL filters is taken from current image
+            S2b(scal,hl,:) = [value,maxX,maxY];
         end
     end
     for hl=1:nHL
@@ -24,4 +24,3 @@ function [ C2,coords ] = getC2(S2, HMAXparams)
     C2 = C2tmp(:,1)';
     coords = C2tmp(:,2:4);
 end
-

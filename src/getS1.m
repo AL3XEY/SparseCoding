@@ -22,7 +22,7 @@ function [ S1 ] = getS1( img, HMAXparams, gaborFilters, display )
             for i = 1:HMAXparams.nth
 			  imaf = S1{scal}(:,:,i);
 			  vis = max(imaf(:));
-			  subplot(3,4,i)
+			  subplot(3,4,i) %TODO only if 12 orientations %TODO in HMAXparams ?
 			  imshow(uint8(255*(imaf/vis + 0.3)))
             end
          end
