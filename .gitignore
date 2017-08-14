@@ -8,6 +8,7 @@
 *.ppm
 *.gif
 *.bmp
+*.svg
 res/yalefaces/
 res/101_ObjectCategories/BACKGROUND_Google/tmp
 
