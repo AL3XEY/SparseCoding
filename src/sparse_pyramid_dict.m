@@ -24,7 +24,6 @@ if nargin<3 || isempty(B)
 		beta{j} = 0.01; %0.05
 		B{j} = fooB;
 	end
-	%TODO B could be a matrix, a list or a filename
 end
 if nargin<4 || isempty(beta)
 	for j=1:n_levels+1

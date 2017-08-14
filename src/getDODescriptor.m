@@ -22,36 +22,48 @@ function [DO] = getDODescriptor(SO, HMAXparams, gaborFilters, display)
 		end
 	end
 
-	if display
-		for scal=1:1%nscales
-			for th=1:1%nth
-				for chan=1:8
-					figure
-	                colormap gray
-					imagesc(dochans{scal}(:,:,th,chan))
-				end
-			end
-		end
-	end
+    if display
+        for scal=1:nscales
+            for chan=1:nchans
+                figure
+                colormap gray
+                for th=1:nth
+                    subplot(HMAXparams.displayH,HMAXparams.displayW,th)
+                    imagesc(dochans{scal}(:,:,th,chan))
+                    title(sprintf('th = %d', th));
+                end
+                a = axes;
+                t1 = title(sprintf('DO Gabor filtering | scale = %d | chan = %d', scal, chan));
+                set(a,'Visible','off');
+                set(t1,'Visible','on');
+            end
+        end
+    end
 
 	%half-squaring
 	for scal=1:nscales
-		idx = find(dochans{scal}<0);
+		idx = find(dochans{scal}<0); %TODO dochans{scal}(dochans{scal}<0) ?
 		dochans{scal}(idx) = 0;
 		dochans{scal} = dochans{scal}.^2;
 	end
 
 	if display
-		for scal=1:1%nscales
-			for th=1:1%nth
-				for chan=1:8
-					figure
-	                colormap gray
-					imagesc(dochans{scal}(:,:,th,chan))
-				end
-			end
-		end
-	end
+        for scal=1:nscales
+            for chan=1:nchans
+                figure
+                colormap gray
+                for th=1:nth
+                    subplot(HMAXparams.displayH,HMAXparams.displayW,th)
+                    imagesc(dochans{scal}(:,:,th,chan))
+                    title(sprintf('th = %d', th));
+                end
+                a = axes;
+                t1 = title(sprintf('DO half-squaring | scale = %d | chan = %d', scal, chan));
+                set(a,'Visible','off');
+                set(t1,'Visible','on');
+            end
+        end
+    end
 
 	%normalization
 	DO=cell(1,nscales);
@@ -68,16 +80,22 @@ function [DO] = getDODescriptor(SO, HMAXparams, gaborFilters, display)
 		end
 	end
 
-	if display
-		for scal=1:1%nscales
-			for th=1:1%nth
-				for chan=1:8
-					figure
-	                colormap gray
-					imagesc(DO{scal}(:,:,th,chan))
-				end
-			end
-		end
-	end
+	    if display
+        for scal=1:nscales
+            for chan=1:nchans
+                figure
+                colormap gray
+                for th=1:nth
+                    subplot(HMAXparams.displayH,HMAXparams.displayW,th)
+                    imagesc(DO{scal}(:,:,th,chan))
+                    title(sprintf('th = %d', th));
+                end
+                a = axes;
+                t1 = title(sprintf('DO normalizing | scale = %d | chan = %d', scal, chan));
+                set(a,'Visible','off');
+                set(t1,'Visible','on');
+            end
+        end
+    end
 
 end

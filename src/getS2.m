@@ -28,20 +28,27 @@ function [ S2 ] = getS2( C1, HLfilters, HMAXparams, display )
 					R = - R/(2*sigma2*alpha);
                     R = exp(R);
 					S2{scal}(x,y,cpt) = R;
-					%S2{scal}(x,y,cpt) = exp(-sqrt(sum(sum(sum((HLfilters{scal}(:,:,:,cpt) - C1{scal}(x:x+sz-1,y:y+sz-1,:)).^2))))/(2*sigma2*alpha));
+					%S2{scal}(x,y,cpt) =
+					%exp(-sqrt(sum(sum(sum((HLfilters{scal}(:,:,:,cpt) - C1{scal}(x:x+sz-1,y:y+sz-1,:)).^2))))/(2*sigma2*alpha)); 
                 end
             end
         end
     end
     %Display the S2 layer
     if display
-        for scal=1:HMAXparams.nscales-1
-            for cpt=1:nHL
-                figure
+        for cpt=1:nHL
+            figure
+            for scal=1:HMAXparams.nscales-1
                 imgS2 = S2{scal}(:,:,cpt);
                 vis = max(max(max(imgS2(:,:,:))));
+                subplot(ceil(sqrt(HMAXparams.nscales)),ceil(sqrt(HMAXparams.nscales)), scal) %TODO temporary (sqrt)
                 imshow(uint8(255*(imgS2/vis + 0.3)))
+                title(sprintf('scale = %d', i));
             end
+            a = axes;
+            t1 = title(sprintf('S2 | filter = %d', cpt));
+            set(a,'Visible','off');
+            set(t1,'Visible','on');
         end
     end
 end

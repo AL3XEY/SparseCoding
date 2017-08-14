@@ -2,7 +2,7 @@ function [gaborFilters] = getGaborFilters(HMAXparams, display)
     if nargin<1 || isempty(display)
         display = false;
     end
-    
+
 	gaborFilters = cell(1,HMAXparams.nscales);
 	th = (0:HMAXparams.nth-1)*pi/HMAXparams.nth; % the orientations
 	for scal = 1:HMAXparams.nscales
@@ -17,17 +17,9 @@ function [gaborFilters] = getGaborFilters(HMAXparams, display)
 			filt(:,:,i) = filt(:,:,i) - mn(i); %centering
 		end
 		%filt = filt - mean(mean(filt)); % centering %Octave only
-        
+
         % normalization (L2 norm)
-		if(is_octave)
-			filt = filt ./ sqrt(sum(sumsq(filt))); 
-        else
-            if license('test','neural_network_toolbox')
-                filt = filt ./ sqrt(sum(sumsqr(filt)));
-            else
-                filt = filt ./ sqrt(sum(sum(filt.^2)));
-            end
-		end
+        filt = filt ./ sqrt(sum(sum(filt.^2)));
 
 		% display the filters
         if display
@@ -35,9 +27,14 @@ function [gaborFilters] = getGaborFilters(HMAXparams, display)
             for i = 1:HMAXparams.nth
 			  imas = filt(:,:,i);
 			  nor = max(imas(:));
-			  subplot(3,4,i)
+			  subplot(HMAXparams.displayH,HMAXparams.displayW,i)
 			  imshow((imas/nor+1)/2)
+              title(sprintf('th = %d', i));
             end
+            a = axes;
+            t1 = title(sprintf('Gabor Filters | scale = %d', scal));
+            set(a,'Visible','off');
+            set(t1,'Visible','on');
         end
 		gaborFilters{scal} = filt;
 	end

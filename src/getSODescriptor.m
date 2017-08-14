@@ -45,45 +45,57 @@ function [SO, ochans] = getSODescriptor(img, HMAXparams, gaborFilters, display) 
 
 	for scal=1:nscales
 		for th=1:nth
-            for i=1:HMAXparams.outChansHalf
+            for i=1:nchans/2
                 for j=1:HMAXparams.inChans
                     ochans{scal}(:,:,th,i) = ochans{scal}(:,:,th,i) + Wexcit(j,i).*excit{scal}(:,:,th,j) + Winhib(j,i).*inhib{scal}(:,:,th,j);
-                    ochans{scal}(:,:,th,i+HMAXparams.outChansHalf) = -(ochans{scal}(:,:,th,i) + Wexcit(j,i).*excit{scal}(:,:,th,j) + Winhib(j,i).*inhib{scal}(:,:,th,j));%-ochans{scal}(:,:,th,i);
+                    ochans{scal}(:,:,th,i+nchans/2) = -(ochans{scal}(:,:,th,i) + Wexcit(j,i).*excit{scal}(:,:,th,j) + Winhib(j,i).*inhib{scal}(:,:,th,j));%-ochans{scal}(:,:,th,i);
                 end
             end
-            
-            if display %TODO
-				figure
-				colormap gray
-				imagesc(ochans{scal}(:,:,th,2))
-
-				figure
-				colormap gray
-				imagesc(ochans{scal}(:,:,th,6))
-            end
 		end
-	end
-
-	%TODO display excit, inhib and then ochans/opponnencychannels
-
+    end
+    
+    if display
+        for scal=1:nscales
+            for chan=1:nchans
+                figure
+                colormap gray
+                for th=1:nth
+                    subplot(HMAXparams.displayH,HMAXparams.displayW,th)
+                    imagesc(ochans{scal}(:,:,th,chan))
+                    title(sprintf('th = %d', th));
+                end
+                a = axes;
+                t1 = title(sprintf('SO Gabor filtering | scale = %d | chan = %d', scal, chan));
+                set(a,'Visible','off');
+                set(t1,'Visible','on');
+            end
+        end
+    end
+    
 	%half-squaring
 	for scal=1:nscales
 		idx = find(ochans{scal}<0);
 		ochans{scal}(idx) = 0;
 		ochans{scal} = ochans{scal}.^2;
-	end
-
-	if display
-		for scal=1:1%nscales
-			for th=1:1%nth
-	            for chan=1:8
-	                figure
-	                colormap gray
-	                imagesc(ochans{scal}(:,:,th,chan))
-	            end
-			end
-		end
-	end
+    end
+    
+    if display
+        for scal=1:nscales
+            for chan=1:nchans
+                figure
+                colormap gray
+                for th=1:nth
+                    subplot(HMAXparams.displayH,HMAXparams.displayW,th)
+                    imagesc(ochans{scal}(:,:,th,chan))
+                    title(sprintf('th = %d', th));
+                end
+                a = axes;
+                t1 = title(sprintf('SO half-squaring | scale = %d | chan = %d', scal, chan));
+                set(a,'Visible','off');
+                set(t1,'Visible','on');
+            end
+        end
+    end
 
 	%divisive normalization
 	SO=cell(1,nscales);
@@ -100,17 +112,22 @@ function [SO, ochans] = getSODescriptor(img, HMAXparams, gaborFilters, display) 
 		end
     end
 
-	if display
-        %TODO show every orientation on the same figure and label it
-		for scal=1:1%nscales
-			for th=1:1%nth
-				for chan=1:8
-					figure
-	                colormap gray
-					imagesc(SO{scal}(:,:,th,chan))
-				end
-			end
-		end
-	end
+    if display
+        for scal=1:nscales
+            for chan=1:nchans
+                figure
+                colormap gray
+                for th=1:nth
+                    subplot(HMAXparams.displayH,HMAXparams.displayW,th)
+                    imagesc(SO{scal}(:,:,th,chan))
+                    title(sprintf('th = %d', th));
+                end
+                a = axes;
+                t1 = title(sprintf('SO normalization | scale = %d | chan = %d', scal, chan));
+                set(a,'Visible','off');
+                set(t1,'Visible','on');
+            end
+        end
+    end
 
 end
