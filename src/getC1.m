@@ -25,9 +25,14 @@ function [ C1 ] = getC1( S1, dx, dy, HMAXparams, display )
             for i = 1:HMAXparams.nth
 			  imaf = C1{scal}(:,:,i);
 			  vis = max(imaf(:));
-			  subplot(3,4,i)
+			  subplot(HMAXparams.displayH,HMAXparams.displayW,i)
 			  imshow(uint8(255*(imaf/vis+0.3)))
+              title(sprintf('th = %d', i));
             end
+            a = axes;
+            t1 = title(sprintf('C1 | scale = %d', scal));
+            set(a,'Visible','off');
+            set(t1,'Visible','on');
         end
     end
 end

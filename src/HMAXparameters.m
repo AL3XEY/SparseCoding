@@ -1,7 +1,7 @@
 function [HMAXparams] = HMAXparameters()    
 	HMAXparams.gam = 0.3;
-	%HMAXparams.nth = 12;
-	HMAXparams.nth = 4;
+	%HMAXparams.nth = 12; HMAXparams.displayW = 3; HMAXparams.displayH = 4;
+	HMAXparams.nth = 4; HMAXparams.displayW = 2; HMAXparams.displayH = 2;
     
     %DO descriptors transformation matrix
     %Here, the matrix for human beings
