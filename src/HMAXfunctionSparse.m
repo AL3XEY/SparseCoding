@@ -1,4 +1,4 @@
-function [C2] = HMAXfunctionSparse(dicts, imgs, gamma, HMAXparams, gaborFilters, display)
+function [C2] = HMAXfunctionSparse(imgs, dicts, gamma, HMAXparams, gaborFilters, display)
     if nargin<4 || isempty(HMAXparams)
         HMAXparams = HMAXparameters();
     end
@@ -38,7 +38,7 @@ function [C2] = HMAXfunctionSparse(dicts, imgs, gamma, HMAXparams, gaborFilters,
         %%%  S1  %%%
         %%%%%%%%%%%%
         %% Build the filters for the different orientations %%
-        S1 = getS1(img, gaborFilters, HMAXparams, display);
+        S1 = getS1(img, HMAXparams, gaborFilters, display);
 
         %%%%%%%%%%%%
         %%%  C1  %%%

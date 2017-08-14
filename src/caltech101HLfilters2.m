@@ -1,3 +1,5 @@
+HMAXparams = HMAXparameters();
+gaborFilters = getGaborFilters(HMAXparams, false);
 for i=1:92
    tic
    load(sprintf('../res/101_ObjectCategories/caltech101gray-%d.mat',i));
@@ -8,7 +10,7 @@ for i=1:92
    toc
 end
 tic
-HLfilters = getHLfilters(images,1000,false);
+HLfilters = getHLfilters(images,1000,HMAXparams,gaborFilters,false);
 toc
 save('../res/101_ObjectCategories/caltechHLfiltersgray.mat','HLfilters');
 %save('../res/101_ObjectCategories/caltechHLfiltersgray1.mat','HLfilters');

@@ -17,8 +17,6 @@ function [dicts] = getHLfiltersSparse(imgs, nHL, beta, iterations, oneDictPerSca
 		pkg load image;
     end
 
-	HMAXparams = HMAXparameters();
-
     addpath('../fast-sc-2/code/');
     addpath('../fast-sc-2/code/sc2/');
     addpath('../fast-sc-2/code/sc2/nrf/');
@@ -38,7 +36,7 @@ function [dicts] = getHLfiltersSparse(imgs, nHL, beta, iterations, oneDictPerSca
 		figure
 		imshow(uint8(255*img)) % show original image
 
-		S1 = getS1(img, gaborFilters, HMAXparams, display);
+		S1 = getS1(img, HMAXparams, gaborFilters, display);
 
 		C1tmp = getC1(S1, dx, dy, HMAXparams, display);
         %for scal=1:HMAXparams.nscales-1

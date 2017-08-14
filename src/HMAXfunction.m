@@ -1,4 +1,4 @@
-function [C2] = HMAXfunction(HLfilters, imgs, HMAXparams, gaborFilters, display)
+function [C2] = HMAXfunction(imgs, HLfilters, HMAXparams, gaborFilters, display)
     if nargin<3 || isempty(HMAXparams)
         HMAXparams = HMAXparameters();
     end
@@ -30,7 +30,7 @@ function [C2] = HMAXfunction(HLfilters, imgs, HMAXparams, gaborFilters, display)
         %%%  S1  %%%
         %%%%%%%%%%%%
         %% Build the filters for the different orientations %%
-        S1 = getS1(img, gaborFilters, HMAXparams, display);
+        S1 = getS1(img, HMAXparams, gaborFilters, display);
 
         %%%%%%%%%%%%
         %%%  C1  %%%

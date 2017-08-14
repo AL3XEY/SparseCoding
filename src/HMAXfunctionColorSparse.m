@@ -1,4 +1,4 @@
-function [C2] = HMAXfunctionColorSparse(dicts, imgs, gamma, HMAXparams, gaborFilters, display)
+function [C2] = HMAXfunctionColorSparse(imgs, dicts, gamma, HMAXparams, gaborFilters, display)
     if nargin<4 || isempty(HMAXparams)
         HMAXparams = HMAXparameters();
     end

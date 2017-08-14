@@ -49,7 +49,6 @@ function [HLfilters] = getHLfilters(imgs, nHL, HMAXparams, gaborFilters, display
     nimg = size(imgs,2);
     clear images
     
-    HMAXparams = HMAXparameters();
     HLfilters = cell(1,HMAXparams.nscales-1);
 	for scal=1:HMAXparams.nscales-1
 		sz = HMAXparams.filter_sz(scal);
@@ -67,7 +66,7 @@ function [HLfilters] = getHLfilters(imgs, nHL, HMAXparams, gaborFilters, display
             imshow(uint8(255*img)) % show original image
         end
 
-		S1 = getS1(img, gaborFilters, HMAXparams, display);
+		S1 = getS1(img, HMAXparams, gaborFilters, display);
 
 		C1 = getC1(S1, dx, dy, HMAXparams, display);
 

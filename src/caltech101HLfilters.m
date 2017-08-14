@@ -1,3 +1,6 @@
+HMAXparams = HMAXparameters();
+gaborFilters = getGaborFilters(HMAXparams, false);
+
 % for i=1:92
 %    i
 %    tic
@@ -11,7 +14,7 @@ HLfilters=cell(1,3);
 for i=1:91
    tic
    load(sprintf('../res/101_ObjectCategories/caltech101gray-%d.mat',i));
-   HLfilterstmp = getHLfilters(images,1,false);
+   HLfilterstmp = getHLfilters(images,1,HMAXparams,gaborFilters,false);
    
    for j=1:size(HLfilterstmp,2)
       j
@@ -24,7 +27,7 @@ for i=1:91
    toc
 end
 load('../res/101_ObjectCategories/caltech101gray-92.mat');
-HLfilterstmp = getHLfilters(images,1,false);
+HLfilterstmp = getHLfilters(images,1,HMAXparams,gaborFilters,false);
 for j=1:size(HLfilters,2)
   HLfilters{j}(:,:,:,9101:9101+size(HLfilterstmp{j},4)-1) = HLfilterstmp{j}(:,:,:,:);
 end
