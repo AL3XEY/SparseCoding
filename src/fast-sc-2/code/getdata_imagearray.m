@@ -1,7 +1,13 @@
 function X = getdata_imagearray(IMAGES, winsize, type, option)
+    if nargin<3 || isempty(type) || ~strcmp(type,'some') || ~strcmp(type,'rand')
+        type = 'all';
+    end
     [h,w,channels,num_images]=size(IMAGES);
     BUFF=4;
     if strcmp(type,'rand')
+        if nargin<4 || isempty(option)
+            option = 4096;
+        end
         num_patches = option;
     else
         if strcmp(type,'all')
@@ -40,12 +46,24 @@ function X = getdata_imagearray(IMAGES, winsize, type, option)
                 end
             end 
         else
-            for j=1:foo
-                for k=1:bar
-                    for chan=1:channels
-                        X((chan-1)*winsize^2+1:chan*winsize^2,cpt) = reshape(this_image(j:j+winsize-1, k:k+winsize-1, chan),winsize^2,1)';
+            if strcmp(type,'all')
+                for j=1:foo
+                    for k=1:bar
+                        for chan=1:channels
+                            X((chan-1)*winsize^2+1:chan*winsize^2,cpt) = reshape(this_image(j:j+winsize-1, k:k+winsize-1, chan),winsize^2,1)';
+                        end
+                        cpt = cpt+1;
                     end
-                    cpt = cpt+1;
+                end
+            end
+            if strcmp(type,'some')
+                for j=1:foo
+                    for k=1:bar
+                        for chan=1:channels
+                            X((chan-1)*winsize^2+1:chan*winsize^2,cpt) = reshape(this_image((j-1)*winsize+1:j*winsize, (k-1)*winsize+1:k*winsize, chan),winsize^2,1)';
+                        end
+                        cpt = cpt+1;
+                    end
                 end
             end
         end
