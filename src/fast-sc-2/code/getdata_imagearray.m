@@ -1,22 +1,36 @@
 function X = getdata_imagearray(IMAGES, winsize, type, option)
-    if nargin<3 || isempty(type) || ~strcmp(type,'some') || ~strcmp(type,'rand')
-        type = 'all';
+    if nargin<3 || isempty(type) || (~strcmp(type,'some') && ~strcmp(type,'rand'))
+        %this is equivalent to previous 'all' type
+        %selects every patch of the image(s)
+        type = 'some';
+        option = 1;
     end
     [h,w,channels,num_images]=size(IMAGES);
-    BUFF=4;
     if strcmp(type,'rand')
+        BUFF=4;
         if nargin<4 || isempty(option)
             option = 4096;
         end
         num_patches = option;
     else
-        if strcmp(type,'all')
-            foo = h - winsize + 1;
-            bar = w - winsize + 1;
+        if isempty(option)
+            if nargin < 4
+                option = winsize;
+            else
+                option = 1;
+            end
         end
-        if strcmp(type,'some')
-            foo = floor(h / winsize);
-            bar = floor(w / winsize);
+        if option==winsize
+            foo = floor(h / option);
+            bar = floor(w / option);
+        end
+        if option<winsize
+            foo = floor((h - winsize + 1)/ option);
+            bar = floor((w - winsize + 1)/ option);
+        end
+        if option>winsize
+            foo = floor((h - winsize + 1)/ option)+1;
+            bar = floor((w - winsize + 1)/ option)+1;
         end
         patches_per_image = foo*bar;
         num_patches = num_images * patches_per_image;
@@ -46,24 +60,12 @@ function X = getdata_imagearray(IMAGES, winsize, type, option)
                 end
             end 
         else
-            if strcmp(type,'all')
-                for j=1:foo
-                    for k=1:bar
-                        for chan=1:channels
-                            X((chan-1)*winsize^2+1:chan*winsize^2,cpt) = reshape(this_image(j:j+winsize-1, k:k+winsize-1, chan),winsize^2,1)';
-                        end
-                        cpt = cpt+1;
+            for j=1:foo
+                for k=1:bar
+                    for chan=1:channels
+                        X((chan-1)*winsize^2+1:chan*winsize^2,cpt) = reshape(this_image((j-1)*option+1:(j-1)*option+winsize, (k-1)*option+1:(k-1)*option+winsize, chan),winsize^2,1)';
                     end
-                end
-            end
-            if strcmp(type,'some')
-                for j=1:foo
-                    for k=1:bar
-                        for chan=1:channels
-                            X((chan-1)*winsize^2+1:chan*winsize^2,cpt) = reshape(this_image((j-1)*winsize+1:j*winsize, (k-1)*winsize+1:k*winsize, chan),winsize^2,1)';
-                        end
-                        cpt = cpt+1;
-                    end
+                    cpt = cpt+1;
                 end
             end
         end
