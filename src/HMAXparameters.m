@@ -1,7 +1,8 @@
-function [HMAXparams] = HMAXparameters()    
-	HMAXparams.gam = 0.3;
-	%HMAXparams.nth = 12; HMAXparams.displayW = 3; HMAXparams.displayH = 4;
-	HMAXparams.nth = 4; HMAXparams.displayW = 2; HMAXparams.displayH = 2;
+function [HMAXparams] = HMAXparameters()
+    %structure containing all the parameters needed for HMAX (and HMAX variations)
+    
+    %HMAXparams.nth = 12; HMAXparams.displayW = 3; HMAXparams.displayH = 4;
+	HMAXparams.nth = 4; HMAXparams.displayW = 2; HMAXparams.displayH = 2; %number of orientations + display parameters
     
     %DO descriptors transformation matrix
     %Here, the matrix for human beings
@@ -26,9 +27,14 @@ function [HMAXparams] = HMAXparameters()
 	%HMAXparams.filter_sz = [7,11,15,19,23,27,31,35];
 	%HMAXparams.pool_sz = [8,10,12,14,16,18,22,24];
 
-	HMAXparams.nscales = 4; % = size(...)
-	HMAXparams.sigma = [2.8,4.5,6.7,8.2];
-	HMAXparams.lambda = [3.5,5.6,7.9,10.3];
-	HMAXparams.filter_sz = [7,11,15,19];
-	HMAXparams.pool_sz = [8,10,12,14];
+	HMAXparams.nscales = 4; %number of scales to process
+	HMAXparams.sigma = [2.8,4.5,6.7,8.2]; %sigma for Gabor filters generation
+	HMAXparams.lambda = [3.5,5.6,7.9,10.3]; %lambda for Gabor filters generation
+	HMAXparams.filter_sz = [7,11,15,19]; %size of the filters in pixels
+	HMAXparams.pool_sz = [8,10,12,14]; %size of the pooling patches in pixels
+    
+    HMAXparams.gam = 0.3; %gamma for Gabor filters generation
+    
+    %%%%% Sparse Coding parameters %%%%%
+    HMAXparams.oneDictPerScale = false;
 end

@@ -1,5 +1,9 @@
 function [gaborFilters] = getGaborFilters(HMAXparams, display)
-    if nargin<1 || isempty(display)
+    %get gabor filters as output, given the parameters wanted
+    if nargin==0 || isempty(HMAXparams)
+        HMAXparams = HMAXparameters();
+    end
+    if nargin<2 || isempty(display)
         display = false;
     end
 
@@ -10,14 +14,16 @@ function [gaborFilters] = getGaborFilters(HMAXparams, display)
 		xx = (-(nxy-1)/2:(nxy-1)/2);
 		yy = xx;
 		[x,y] = meshgrid(xx,yy);
-
 		[filt] = gabor(x,y,th,scal,HMAXparams);
-		mn = mean(mean(filt));
-		for i=1:HMAXparams.nth
-			filt(:,:,i) = filt(:,:,i) - mn(i); %centering
-		end
-		%filt = filt - mean(mean(filt)); % centering %Octave only
-
+        if is_octave
+            filt = filt - mean(mean(filt)); % centering, Octave only
+        else
+            mn = mean(mean(filt));
+            for i=1:HMAXparams.nth
+                filt(:,:,i) = filt(:,:,i) - mn(i); %centering
+            end
+        end
+		
         % normalization (L2 norm)
         filt = filt ./ sqrt(sum(sum(filt.^2)));
 
