@@ -9,10 +9,13 @@ color = true;
 %%%%% Load images - 3 groups %%%%%
 
 imgsHmaxTraining{1} = imread('../res/boat.png');
+imgsHmaxTraining{2} = imread('../res/peppers.png');
 imgsSVMTraining{1} = imread('../res/baboon.png');
+imgsSVMTraining{2} = imread('../res/fruits.png');
 classes(1) = 1;
-%classes(1:nHL) = 1;
+classes(2) = 2;
 imgsSVMTesting{1} = imread('../res/lena.ppm');
+imgsSVMTesting{2} = imread('../res/kids.ppm');
 
 %%%%% learn HL filters on group 1 %%%%%
 
@@ -36,18 +39,15 @@ testingFeatures = HMAXfunction(imgsSVMTesting, HLfilters, HMAXparams, gaborFilte
 %testingFeatures = HMAXfunctionSparse(imgsSVMTesting, HLfilters, gamma, HMAXparams, gaborFilters, display);
 %%trainingFeatures = HMAXfunctionColor(imgsSVMTraining, HLfilters, HMAXparams, gaborFilters, display);
 %%testingFeatures = HMAXfunctionColor(imgsSVMTesting, HLfilters, HMAXparams, gaborFilters, display);
-%trainingFeatures = HMAXfunctionColorSparse(imgsSVMTraining, HLfilters, HMAXparams, gaborFilters, display);
-%testingFeatures = HMAXfunctionColorSparse(imgsSVMTesting, HLfilters, HMAXparams, gaborFilters, display);
+%trainingFeatures = HMAXfunctionColorSparse(imgsSVMTraining, HLfilters, gamma, HMAXparams, gaborFilters, display);
+%testingFeatures = HMAXfunctionColorSparse(imgsSVMTesting, HLfilters, gamma, HMAXparams, gaborFilters, display);
 
 %%%%% SVM Training on group 2 %%%%%
 
 %load trainingFeatures.mat
-%load ../res/hmax_dataset/imgs.mat
-%TODO need classes
-SVMModel = fitcsvm(trainingFeatures, classes,'KernelFunction','rbf','BoxConstraint',Inf,'ClassNames',[0,1]);
+SVMModel = fitcsvm(trainingFeatures, classes,'KernelFunction','rbf','BoxConstraint',1,'ClassNames',[0,1]); %TODO BoxConstraint shouldn't be set to 1 because we have multiple classes
 %TODO cross-validation
 
 %%%%% SVM testing on group 3 %%%%%
 
-[label,score] = predict(SVMModel,testingFeatures(8,:))
-[label,score] = predict(SVMModel,testingFeatures(9,:))
+[label,score] = predict(SVMModel,testingFeatures)
