@@ -25,7 +25,7 @@ function [gaborFilters] = getGaborFilters(HMAXparams, display)
         end
 		
         % normalization (L2 norm)
-        filt = filt ./ sqrt(sum(sum(filt.^2)));
+        filt = filt ./ sqrt(sum(sum(sum((filt.^2)))));
 
 		% display the filters
         if display
@@ -35,10 +35,10 @@ function [gaborFilters] = getGaborFilters(HMAXparams, display)
 			  nor = max(imas(:));
 			  subplot(HMAXparams.displayH,HMAXparams.displayW,i)
 			  imshow((imas/nor+1)/2)
-              title(sprintf('th = %d', i));
+              title(sprintf('th = %d', i)); %TODO display real angle
             end
             a = axes;
-            t1 = title(sprintf('Gabor Filters | scale = %d', scal));
+            t1 = title(sprintf('Gabor Filters | scale = %d', HMAXparams.filter_sz(scal)));
             set(a,'Visible','off');
             set(t1,'Visible','on');
         end

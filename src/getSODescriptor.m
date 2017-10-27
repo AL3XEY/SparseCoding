@@ -1,4 +1,4 @@
-function [SO, ochans] = getSODescriptor(img, HMAXparams, gaborFilters, display) %img must be normalized between 0 and 255
+function [SO] = getSODescriptor(img, HMAXparams, gaborFilters, display) %img must be normalized between 0 and 255
     if nargin<2 || isempty(HMAXparams)
         HMAXparams = HMAXparameters();
     end
@@ -20,6 +20,7 @@ function [SO, ochans] = getSODescriptor(img, HMAXparams, gaborFilters, display) 
 	[h,w,c] = size(img);
 
 	nth=HMAXparams.nth;
+    angles = (0:HMAXparams.nth-1)*pi/HMAXparams.nth;
 	nscales = HMAXparams.nscales;
 	ochans=cell(1,nscales);
 	dochans=cell(1,nscales);
@@ -36,7 +37,7 @@ function [SO, ochans] = getSODescriptor(img, HMAXparams, gaborFilters, display) 
 	    for th = 1:nth
 	        filterexcit = (gaborFilters{scal}(:,:,th)>0).*gaborFilters{scal}(:,:,th);
 	        filterinhib = -(gaborFilters{scal}(:,:,th)<0).*gaborFilters{scal}(:,:,th);
-	        for color=1:3
+	        for color=1:HMAXparams.inChans
 	            excit{scal}(:,:,th,color) = abs(filter2(filterexcit,img(:,:,color)));
 	            inhib{scal}(:,:,th,color) = abs(filter2(filterinhib,img(:,:,color)));
 	        end
@@ -53,7 +54,7 @@ function [SO, ochans] = getSODescriptor(img, HMAXparams, gaborFilters, display) 
             end
 		end
     end
-    
+
     if display
         for scal=1:nscales
             for chan=1:nchans
@@ -62,23 +63,23 @@ function [SO, ochans] = getSODescriptor(img, HMAXparams, gaborFilters, display) 
                 for th=1:nth
                     subplot(HMAXparams.displayH,HMAXparams.displayW,th)
                     imagesc(ochans{scal}(:,:,th,chan))
-                    title(sprintf('th = %d', th));
+                    title(sprintf('th = %d', angles(th))); %TODO display real angle
                 end
                 a = axes;
-                t1 = title(sprintf('SO Gabor filtering | scale = %d | chan = %d', scal, chan));
+                t1 = title(sprintf('SO Gabor filtering | scale = %d | chan = %d', HMAXparams.filter_sz(scal), chan));
                 set(a,'Visible','off');
                 set(t1,'Visible','on');
             end
         end
     end
-    
+
 	%half-squaring
 	for scal=1:nscales
 		idx = find(ochans{scal}<0);
 		ochans{scal}(idx) = 0;
 		ochans{scal} = ochans{scal}.^2;
     end
-    
+
     if display
         for scal=1:nscales
             for chan=1:nchans
@@ -87,10 +88,10 @@ function [SO, ochans] = getSODescriptor(img, HMAXparams, gaborFilters, display) 
                 for th=1:nth
                     subplot(HMAXparams.displayH,HMAXparams.displayW,th)
                     imagesc(ochans{scal}(:,:,th,chan))
-                    title(sprintf('th = %d', th));
+                    title(sprintf('th = %d', angles(th))); %TODO display real angle
                 end
                 a = axes;
-                t1 = title(sprintf('SO half-squaring | scale = %d | chan = %d', scal, chan));
+                t1 = title(sprintf('SO half-squaring | scale = %d | chan = %d', HMAXparams.filter_sz(scal), chan));
                 set(a,'Visible','off');
                 set(t1,'Visible','on');
             end
@@ -100,14 +101,14 @@ function [SO, ochans] = getSODescriptor(img, HMAXparams, gaborFilters, display) 
 	%divisive normalization
 	SO=cell(1,nscales);
 	for scal=1:nscales
-		SO{scal}=zeros(h,w,nth,8);
+		SO{scal}=zeros(h,w,nth,nchans);
 	end
 	k=1;
 	sigma=0.225;
 	sigma2=sigma^2;
 	sm = sum(ochans{scal},4);
     for scal=1:nscales
-		for chan=1:8
+		for chan=1:nchans
 			SO{scal}(:,:,:,chan) = sqrt((k*ochans{scal}(:,:,:,chan))./(sigma2+sm));
 		end
     end
@@ -120,10 +121,10 @@ function [SO, ochans] = getSODescriptor(img, HMAXparams, gaborFilters, display) 
                 for th=1:nth
                     subplot(HMAXparams.displayH,HMAXparams.displayW,th)
                     imagesc(SO{scal}(:,:,th,chan))
-                    title(sprintf('th = %d', th));
+                    title(sprintf('th = %d', angles(th))); %TODO display real angle
                 end
                 a = axes;
-                t1 = title(sprintf('SO normalization | scale = %d | chan = %d', scal, chan));
+                t1 = title(sprintf('SO normalization | scale = %d | chan = %d', HMAXparams.filter_sz(scal), chan));
                 set(a,'Visible','off');
                 set(t1,'Visible','on');
             end
