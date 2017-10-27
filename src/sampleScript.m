@@ -8,7 +8,7 @@ color = true;
 
 %%%%% Load images - 3 groups %%%%%
 
-imgsHmaxTraining{1} = imread('../res/boat.png');
+imgsHmaxTraining{1} = imread('../res/rgb-circles.bmp');
 imgsHmaxTraining{2} = imread('../res/peppers.png');
 imgsSVMTraining{1} = imread('../res/baboon.png');
 imgsSVMTraining{2} = imread('../res/fruits.png');
@@ -23,9 +23,9 @@ HMAXparams = HMAXparameters();
 gaborFilters = getGaborFilters(HMAXparams, display);
 beta=0.1;iterations=2;oneDictPerScale=false;
 %%%HLfilters = getHLfiltersFusion(imgsHmaxTraining, nHL, sparseLearning, color ,HMAXparams, gaborFilters, display);
-HLfilters = getHLfilters(imgsHmaxTraining, nHL, HMAXparams, gaborFilters, display);
+%HLfilters = getHLfilters(imgsHmaxTraining, nHL, HMAXparams, gaborFilters, display);
 %HLfilters = getHLfiltersSparse(imgsHmaxTraining, nHL, beta, iterations, oneDictPerScale, HMAXparams, gaborFilters, display);
-%%HLfilters = getHLfiltersColor(imgsHmaxTraining, nHL, display);
+HLfilters = getHLfiltersColor(imgsHmaxTraining, nHL, display);
 %%HLfilters = getHLfiltersColorSparse(imgsHmaxTraining, nHL, beta, iterations, oneDictPerScale, HMAXparams, gaborFilters, display);
 
 %%%%% apply HMAX on group 2 & 3 %%%%%
